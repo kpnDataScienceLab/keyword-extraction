@@ -10,6 +10,7 @@ texts = data['text']
 n = 8
 
 for text in texts[0:5]:
+
     tfidf_words = tfidf(text, n=n)
     rake_words = rake(text, n=n)
     yake_words = yake_keywords(text, n=n)
@@ -17,4 +18,10 @@ for text in texts[0:5]:
     print()
     print("index. tf-idf | rake | yake")
     for idx in range(n):
-        print(f"{idx + 1}) {tfidf_words[idx]} | {rake_words[idx]} | {yake_words[idx]}")
+        if idx >= len(tfidf_words):
+            tfidf_words.append("---")
+        if idx >= len(rake_words):
+            rake_words.append("---")
+        if idx >= len(yake_words):
+            yake_words.append("---")
+        print(f"{idx + 1}) {tfidf_words[idx]} \t| {rake_words[idx]} \t| {yake_words[idx]}")
