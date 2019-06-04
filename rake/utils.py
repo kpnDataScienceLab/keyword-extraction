@@ -11,7 +11,7 @@ def get_texts(fname):
         in column 'text'
     :return: a list of strings where each string is a text
     """
-    ts = pd.read_csv(fname)['text']
+    ts = pd.read_csv(fname)["text"]
     return [re.sub(r"'([^']+)',?\s", r"\1 ", t) for t in ts]
 
 
@@ -22,7 +22,7 @@ def get_stopwords(size):
     :param size: 'medium' or 'large'
     :return: a list containing all stopwords
     """
-    fname = 'stopwords/stopwords_' + size + '.pkl'
-    with open(fname, 'rb') as handle:
+    fname = "stopwords/stopwords_" + size + ".pkl"
+    with open(fname, "rb") as handle:
         stopwords = pkl.load(handle)
     return stopwords

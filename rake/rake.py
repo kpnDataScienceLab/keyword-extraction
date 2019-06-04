@@ -12,12 +12,40 @@ def get_keywords(rake, text):
     return rake.get_ranked_phrases()
 
 
-def extract_keywords(flags):
+def save_keywords(extracted, run_id):
+    with open("processed/" + run_id + ".pkl", "wb") as handle:
+        pkl.dump(extracted, handle)
+
+
+def rake(text,
+         n=20,
+         max_length=3,
+         stopwords='nltk'):
+
+    # select stopword list
+    if stopwords == 'nltk':
+        stopwords = None
+    else:
+        stopwords = utils.get_stopwords(stopwords)
+
+    r = Rake(
+        language="dutch",
+        stopwords=stopwords,
+        max_length=max_length
+    )
+
+    keywords = get_keywords(r, text)
+    return keywords[0:n] if len(keywords) >= n else keywords
+
+
+def process_dataset(data_path='../aligned_epg_transcriptions_npo1_npo2.csv',
+                    max_length=3,
+                    stopwords='nltk'):
     # load texts from the sample dataset
-    texts = utils.get_texts(flags.data_path)
+    texts = utils.get_texts(data_path)
 
     # identification for the current run
-    run_id = datetime.now().strftime("%Y-%m-%d_%H-%M-%S_rake_" + flags.stopwords + '_' + flags.max_length)
+    run_id = datetime.now().strftime(f"%Y-%m-%d_%H-%M-%S_rake_{stopwords}_{max_length}")
 
     # The ranking_metric parameter may be:
     #  (1) [Metric.DEGREE_TO_FREQUENCY_RATIO] Ratio of degree of word to its frequency (default)
@@ -25,15 +53,15 @@ def extract_keywords(flags):
     #  (3) [Metric.WORD_FREQUENCY] Frequency of word only
 
     # select stopword list
-    if flags.stopwords == 'nltk':
+    if stopwords == 'nltk':
         stopwords = None
     else:
-        stopwords = utils.get_stopwords(flags.stopwords)
+        stopwords = utils.get_stopwords(stopwords)
 
     rake = Rake(
         language="dutch",
         stopwords=stopwords,
-        max_length=flags.max_length
+        max_length=max_length
     )
 
     extracted = []
@@ -41,8 +69,7 @@ def extract_keywords(flags):
     for text in tqdm(texts, ncols=80):
         extracted.append({"text": text, "keywords": get_keywords(rake, text)})
 
-    with open("processed/" + run_id + ".pkl", "wb") as handle:
-        pkl.dump(extracted, handle)
+    save_keywords(extracted, run_id)
 
 
 def main():
@@ -57,7 +84,7 @@ def main():
     parser.add_argument(
         "--max_length",
         type=int,
-        default=99,
+        default=3,
         help="Maximum length of each keyphrase"
     )
     parser.add_argument(
@@ -69,7 +96,8 @@ def main():
     )
 
     flags = parser.parse_args()
-    extract_keywords(flags)
+    process_dataset(flags.data_path, flags.max_length, flags.stopwords)
 
 
-main()
+if __name__ == '__main__':
+    main()
