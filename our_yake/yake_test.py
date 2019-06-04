@@ -1,4 +1,4 @@
-import yake
+import our_yake
 
 def yakeTest():
 
@@ -11,14 +11,14 @@ def yakeTest():
 	"""
 
 	# assuming default parameters
-	simple_kwextractor = yake.KeywordExtractor()
+	simple_kwextractor = our_yake.KeywordExtractor()
 	keywords = simple_kwextractor.extract_keywords(text_content)
 
 	for kw in keywords:
 		print(kw)
 
 	# specifying parameters
-	custom_kwextractor = yake.KeywordExtractor(lan="en", n=3, dedupLim=0.9, dedupFunc='seqm', windowsSize=1, top=20, features=None)
+	custom_kwextractor = our_yake.KeywordExtractor(lan="en", n=3, dedupLim=0.9, dedupFunc='seqm', windowsSize=1, top=20, features=None)
 
 	keywords = custom_kwextractor.extract_keywords(text_content)
 

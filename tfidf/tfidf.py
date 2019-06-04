@@ -2,7 +2,6 @@ import pandas as pd
 import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-nltk.download('stopwords')
 file_name = 'aligned_epg_transcriptions_npo1_npo2.csv'
 data = pd.read_csv(file_name)
 texts = data['text']
