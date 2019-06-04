@@ -17,5 +17,4 @@ for text in texts[0:5]:
     print()
     print("index. tf-idf | rake | yake")
     for idx in range(n):
-        if len(tfidf_words)
         print(f"{idx + 1}) {tfidf_words[idx]} | {rake_words[idx]} | {yake_words[idx]}")

@@ -3,9 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="1782b5df-152c-4151-9eb0-fc10eefb9763" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rake/rake.py" beforeDir="false" afterPath="$PROJECT_DIR$/rake/rake.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rake/readme.txt" beforeDir="false" afterPath="$PROJECT_DIR$/rake/readme.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yake/run_yake.py" beforeDir="false" afterPath="$PROJECT_DIR$/yake/run_yake.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/compare.py" beforeDir="false" afterPath="$PROJECT_DIR$/compare.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -18,36 +16,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/rake/rake.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="6" column="32" lean-forward="true" selection-start-line="6" selection-start-column="32" selection-end-line="6" selection-end-column="32" />
-              <folding>
-                <element signature="e#0#29#0" expanded="true" />
-                <element signature="e#166#240#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/yake/run_yake.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="576">
-              <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
-              <folding>
-                <element signature="e#384#399#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/compare.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="96">
-              <caret line="4" selection-start-line="4" selection-end-line="4" />
+            <state relative-caret-position="456">
+              <caret line="19" column="27" selection-start-line="19" selection-start-column="27" selection-end-line="19" selection-end-column="27" />
               <folding>
                 <element signature="e#0#26#0" expanded="true" />
               </folding>
@@ -56,17 +29,30 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/rake/__init__.py">
-          <provider selected="true" editor-type-id="text-editor" />
+        <entry file="file://$PROJECT_DIR$/our_yake/run_yake.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="401">
+              <caret line="38" column="40" lean-forward="true" selection-start-line="38" selection-start-column="40" selection-end-line="38" selection-end-column="40" />
+            </state>
+          </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/rake/utils.py">
+        <entry file="file://$PROJECT_DIR$/our_yake/yake_by_us.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="672">
-              <caret line="28" selection-start-line="28" selection-end-line="28" />
+            <state relative-caret-position="432">
+              <caret line="30" column="49" selection-start-line="30" selection-start-column="49" selection-end-line="30" selection-end-column="49" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/rake/view.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="288">
+              <caret line="13" selection-start-line="13" selection-end-line="14" selection-end-column="32" />
               <folding>
-                <element signature="e#0#19#0" expanded="true" />
+                <element signature="e#0#20#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -89,6 +75,7 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>language</find>
+      <find>print</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -110,16 +97,19 @@
         <option value="$PROJECT_DIR$/rake/tfidf.py" />
         <option value="$PROJECT_DIR$/rake/readme.md" />
         <option value="$PROJECT_DIR$/rake/yake.py" />
-        <option value="$PROJECT_DIR$/tfidf/tfidf.py" />
         <option value="$PROJECT_DIR$/rake/rake.py" />
-        <option value="$PROJECT_DIR$/compare.py" />
+        <option value="$PROJECT_DIR$/tfidf/tfidf.py" />
+        <option value="$PROJECT_DIR$/yake/yake_by_us.py" />
         <option value="$PROJECT_DIR$/yake/run_yake.py" />
+        <option value="$PROJECT_DIR$/our_yake/run_yake.py" />
+        <option value="$PROJECT_DIR$/our_yake/yake_by_us.py" />
+        <option value="$PROJECT_DIR$/compare.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="224" />
-    <option name="y" value="-1458" />
+    <option name="x" value="-22" />
+    <option name="y" value="-20" />
     <option name="width" value="1932" />
     <option name="height" value="1047" />
   </component>
@@ -157,11 +147,6 @@
               <item name="keyword-extraction" type="b2602c69:ProjectViewProjectNode" />
               <item name="keyword-extraction" type="462c0819:PsiDirectoryNode" />
               <item name="tfidf" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="keyword-extraction" type="b2602c69:ProjectViewProjectNode" />
-              <item name="keyword-extraction" type="462c0819:PsiDirectoryNode" />
-              <item name="yake" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -233,22 +218,22 @@
       <option name="presentableId" value="Default" />
       <updated>1559561380339</updated>
       <workItem from="1559561381819" duration="11622000" />
-      <workItem from="1559635838727" duration="5270000" />
+      <workItem from="1559635838727" duration="6400000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="16892000" />
+    <option name="totallyTimeSpent" value="18022000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-289" y="-1448" width="2576" height="1416" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.09260731" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.124200426" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32936078" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.31852654" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -322,16 +307,6 @@
     <entry file="file://$PROJECT_DIR$/rake/stuff.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/rake/view.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="18" column="11" selection-start-line="18" selection-start-column="11" selection-end-line="18" selection-end-column="11" />
-          <folding>
-            <element signature="e#0#20#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/rake/readme.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
@@ -362,18 +337,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tfidf/tfidf.py">
+    <entry file="file://$PROJECT_DIR$/rake/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/our_yake/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="48">
-          <caret line="2" column="59" selection-start-line="2" selection-start-column="59" selection-end-line="2" selection-end-column="59" />
+        <state>
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/rake/__init__.py">
+    <entry file="file://$PROJECT_DIR$/our_yake/__init__.py">
       <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/rake/rake.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="792">
+          <caret line="35" column="76" lean-forward="true" selection-start-line="35" selection-start-column="76" selection-end-line="35" selection-end-column="76" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+            <element signature="e#166#240#0" />
+          </folding>
+        </state>
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/rake/utils.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -385,42 +373,46 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/compare.py">
+    <entry file="file://$PROJECT_DIR$/tfidf/tfidf.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="4" selection-start-line="4" selection-end-line="4" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/yake/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
+        <state relative-caret-position="72">
+          <caret line="3" selection-start-line="3" selection-end-line="3" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/rake/rake.py">
+    <entry file="file://$PROJECT_DIR$/rake/view.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="6" column="32" lean-forward="true" selection-start-line="6" selection-start-column="32" selection-end-line="6" selection-end-column="32" />
+        <state relative-caret-position="288">
+          <caret line="13" selection-start-line="13" selection-end-line="14" selection-end-column="32" />
           <folding>
-            <element signature="e#0#29#0" expanded="true" />
-            <element signature="e#166#240#0" />
+            <element signature="e#0#20#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/yake/run_yake.py">
+    <entry file="file://$PROJECT_DIR$/our_yake/yake_by_us.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="576">
-          <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
+        <state relative-caret-position="432">
+          <caret line="30" column="49" selection-start-line="30" selection-start-column="49" selection-end-line="30" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/our_yake/run_yake.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="401">
+          <caret line="38" column="40" lean-forward="true" selection-start-line="38" selection-start-column="40" selection-end-line="38" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/compare.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="456">
+          <caret line="19" column="27" selection-start-line="19" selection-start-column="27" selection-end-line="19" selection-end-column="27" />
           <folding>
-            <element signature="e#384#399#0" expanded="true" />
+            <element signature="e#0#26#0" expanded="true" />
           </folding>
         </state>
       </provider>
