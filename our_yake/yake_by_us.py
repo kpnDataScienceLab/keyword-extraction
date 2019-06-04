@@ -7,7 +7,7 @@ def transcriptsToKeywords(transcripts, channels, ARGS):
     custom_extractor = yake.KeywordExtractor(
         lan=ARGS.language,
         n=ARGS.n,  # <-- How many words can a keyword consist of?
-        dedupLim=0.9,
+        dedupLim=0.4,
         dedupFunc='seqm',
         windowsSize=1,
         top=ARGS.top,  # <-- How many of top relevant keywords are returned?

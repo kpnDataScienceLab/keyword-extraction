@@ -24,6 +24,8 @@ text = data['text'][0]
 
 ```
 
+TODO
+
 ### Sources
 
 The medium stopword list was found on https://countwordsfree.com/stopwords/dutch.

@@ -30,8 +30,8 @@ def yake_keywords(text, n=5):
     parser.add_argument('--subsetSize', default=10, type=int, help="Size of subset for testing our_yake.")
     parser.add_argument('--language', default="nl",
                         type=str, help='In what language are the input transcripts?')
-    parser.add_argument('--top', default=10, type=int, help="Number of top-relevant keywords to return")
-    parser.add_argument('--n', default=n, type=int, help="How many words a keyword can consist of")
+    parser.add_argument('--top', default=n, type=int, help="Number of top-relevant keywords to return")
+    parser.add_argument('--n', default=3, type=int, help="How many words a keyword can consist of")
     ARGS = parser.parse_args()
 
     transcripts = []

@@ -9,14 +9,14 @@ texts = data['text']
 
 n = 8
 
-for text in texts[0:5]:
+for i, text in enumerate(texts[5:10]):
 
     tfidf_words = tfidf(text, n=n)
     rake_words = rake(text, n=n)
     yake_words = yake_keywords(text, n=n)
 
     print()
-    print("index. tf-idf | rake | yake")
+    print(f"Document {i + 1}:")
     for idx in range(n):
         if idx >= len(tfidf_words):
             tfidf_words.append("---")
@@ -24,4 +24,4 @@ for text in texts[0:5]:
             rake_words.append("---")
         if idx >= len(yake_words):
             yake_words.append("---")
-        print(f"{idx + 1}) {tfidf_words[idx]} \t| {rake_words[idx]} \t| {yake_words[idx]}")
+        print(f"{idx + 1}. [TF-IDF]: {tfidf_words[idx]} \t\t[RAKE]: {rake_words[idx]} \t\t[YAKE]: {yake_words[idx]}")

@@ -3,6 +3,7 @@ from rake_nltk import Rake
 from tqdm import tqdm
 import pickle as pkl
 import argparse
+import string
 
 import rake.utils as utils
 
@@ -20,7 +21,8 @@ def save_keywords(extracted, run_id):
 def rake(text,
          n=20,
          max_length=3,
-         stopwords='nltk'):
+         stopwords='nltk',
+         punctuation=False):
 
     # select stopword list
     if stopwords == 'nltk':
@@ -34,13 +36,17 @@ def rake(text,
         max_length=max_length
     )
 
+    if not punctuation:
+        text = text.translate(str.maketrans('', '', string.punctuation))
+
     keywords = get_keywords(r, text)
     return keywords[0:n] if len(keywords) >= n else keywords
 
 
 def process_dataset(data_path='../aligned_epg_transcriptions_npo1_npo2.csv',
                     max_length=3,
-                    stopwords='nltk'):
+                    stopwords='nltk',
+                    punctuation=False):
     # load texts from the sample dataset
     texts = utils.get_texts(data_path)
 
@@ -67,6 +73,8 @@ def process_dataset(data_path='../aligned_epg_transcriptions_npo1_npo2.csv',
     extracted = []
     print("Extracting keywords...")
     for text in tqdm(texts, ncols=80):
+        if not punctuation:
+            text = text.translate(str.maketrans('', '', string.punctuation))
         extracted.append({"text": text, "keywords": get_keywords(rake, text)})
 
     save_keywords(extracted, run_id)
@@ -94,9 +102,14 @@ def main():
         choices=['nltk', 'medium', 'large'],
         help="List of stopwords to be used"
     )
+    parser.add_argument(
+        "--punctuation",
+        action="store_true",
+        help="Don't manually remove punctuation from the texts"
+    )
 
     flags = parser.parse_args()
-    process_dataset(flags.data_path, flags.max_length, flags.stopwords)
+    process_dataset(flags.data_path, flags.max_length, flags.stopwords, flags.punctuation)
 
 
 if __name__ == '__main__':
