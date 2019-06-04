@@ -1,15 +1,17 @@
 import yake
 
+
 def transcriptsToKeywords(transcripts, channels, ARGS):
 
 	# 1. Create the extractor object while specifying parameters
+	
 	custom_extractor = yake.KeywordExtractor(
 		lan = ARGS.language, 
-		n=3, 
-		dedupLim=0.9, 
-		dedupFunc='seqm', 
-		windowsSize=1, 
-		top=20, 
+		n = ARGS.n,			# <-- How many words can a keyword consist of? 
+		dedupLim = 0.9, 
+		dedupFunc = 'seqm', 
+		windowsSize = 1, 
+		top = ARGS.top, 		# <-- How many of top relevant keywords are returned?
 		features=None)
 
 	# 1. For each row in transcripts, extract keywords
@@ -29,6 +31,16 @@ def transcriptsToKeywords(transcripts, channels, ARGS):
 			print("Extracting keywords from transcript no. ", idx, " from channel: ", channels[idx])
 			resulting_keywords = custom_extractor.extract_keywords(transcripts[idx])
 			keywords.append(resulting_keywords)
+
+	# 2. For each transcript, sort keywords based on relevance score
+	# print(keywords[0])
+	# for keyword_result in keywords:
+	# 	keyword_result.sort(key = lambda tup: tup[1], reverse = True)
+	# print(keywords[0])
+	# quit()
+	# IS ALREADY SORTED
+
+
 
 	# 3. Print the result of the first extraction
 	return keywords
