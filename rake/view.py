@@ -6,15 +6,17 @@ def view(flags):
     with open('processed/' + flags.file_name + '.pkl', 'rb') as handle:
         keys = pkl.load(handle)
 
-    print()
-    print(keys[flags.id]['text'])
-    print()
+    if flags.text:
+        print()
+        print(keys[flags.id]['text'])
 
-    for k in keys[flags.id]['keywords'][0:flags.max_keywords]:
-        print(k)
+    print()
+    for idx, k in enumerate(keys[flags.id]['keywords'][0:flags.max_keywords]):
+        print(f"{idx + 1}) {k}")
 
     print()
     print(f"{len(keys[flags.id]['keywords'])} total keywords")
+    print()
 
 
 def main():
@@ -36,6 +38,11 @@ def main():
         type=int,
         default=100,
         help="Maximum amount of keywords to be printed"
+    )
+    parser.add_argument(
+        "--text",
+        help="Whether to show the text or not",
+        action="store_true"
     )
 
     flags = parser.parse_args()
