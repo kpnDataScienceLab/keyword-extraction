@@ -4,7 +4,7 @@ from tqdm import tqdm
 import pickle as pkl
 import argparse
 
-import utils
+import rake.utils as utils
 
 
 def get_keywords(rake, text):
