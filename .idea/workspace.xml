@@ -2,14 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1782b5df-152c-4151-9eb0-fc10eefb9763" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/bm25/bm25.py" beforeDir="false" afterPath="$PROJECT_DIR$/bm25/bm25.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/compare.py" beforeDir="false" afterPath="$PROJECT_DIR$/compare.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/our_yake/run_yake.py" beforeDir="false" afterPath="$PROJECT_DIR$/our_yake/run_yake.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/our_yake/yake_by_us.py" beforeDir="false" afterPath="$PROJECT_DIR$/our_yake/yake_by_us.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rake/processed/rake_large_3.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rake/processed/rake_medium_3.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rake/processed/rake_nltk_3.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rake/rake.py" beforeDir="false" afterPath="$PROJECT_DIR$/rake/rake.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rake/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/rake/readme.md" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -22,15 +16,38 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/bm25/bm25.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="720">
-              <caret line="53" column="8" selection-start-line="53" selection-start-column="4" selection-end-line="53" selection-end-column="8" />
+            <state relative-caret-position="840">
+              <caret line="49" lean-forward="true" selection-start-line="49" selection-end-line="49" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
-                <element signature="e#930#1256#0" />
                 <element signature="e#433#861#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/compare.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="432">
+              <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
+              <folding>
+                <element signature="e#0#26#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/rake/rake.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="683">
+              <caret line="42" column="4" selection-start-line="42" selection-start-column="4" selection-end-line="42" selection-end-column="60" />
+              <folding>
+                <element signature="e#0#29#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -68,10 +85,10 @@
         <option value="$PROJECT_DIR$/yake/run_yake.py" />
         <option value="$PROJECT_DIR$/our_yake/yake_by_us.py" />
         <option value="$PROJECT_DIR$/our_yake/run_yake.py" />
-        <option value="$PROJECT_DIR$/compare.py" />
         <option value="$PROJECT_DIR$/rake/rake.py" />
         <option value="$PROJECT_DIR$/rake/readme.md" />
         <option value="$PROJECT_DIR$/bm25/bm25.py" />
+        <option value="$PROJECT_DIR$/compare.py" />
       </list>
     </option>
   </component>
@@ -93,6 +110,11 @@
             <path>
               <item name="keyword-extraction" type="b2602c69:ProjectViewProjectNode" />
               <item name="keyword-extraction" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="keyword-extraction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="keyword-extraction" type="462c0819:PsiDirectoryNode" />
+              <item name="bm25" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="keyword-extraction" type="b2602c69:ProjectViewProjectNode" />
@@ -191,12 +213,12 @@
       <option name="presentableId" value="Default" />
       <updated>1559561380339</updated>
       <workItem from="1559561381819" duration="11622000" />
-      <workItem from="1559635838727" duration="15534000" />
+      <workItem from="1559635838727" duration="20074000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="27156000" />
+    <option name="totallyTimeSpent" value="31696000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-289" y="-1448" width="2576" height="1416" extended-state="6" />
@@ -329,16 +351,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/compare.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="456">
-          <caret line="19" column="24" lean-forward="true" selection-start-line="19" selection-start-column="24" selection-end-line="19" selection-end-column="24" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/rake/view.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="504">
@@ -356,16 +368,6 @@
             <caret line="26" column="4" selection-start-line="26" selection-start-column="4" selection-end-line="26" selection-end-column="4" />
           </first_editor>
           <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/rake/rake.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="611">
-          <caret line="50" column="38" selection-end-line="116" />
-          <folding>
-            <element signature="e#0#29#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -389,14 +391,36 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/rake/rake.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="683">
+          <caret line="42" column="4" selection-start-line="42" selection-start-column="4" selection-end-line="42" selection-end-column="60" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bm25/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/bm25/bm25.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="720">
-          <caret line="53" column="8" selection-start-line="53" selection-start-column="4" selection-end-line="53" selection-end-column="8" />
+        <state relative-caret-position="840">
+          <caret line="49" lean-forward="true" selection-start-line="49" selection-end-line="49" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
-            <element signature="e#930#1256#0" />
             <element signature="e#433#861#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/compare.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -1,21 +1,8 @@
 import pandas as pd
 import nltk
-import string
 import numpy as np
 from math import log
 from sklearn.feature_extraction.text import CountVectorizer
-
-
-def get_freq_matrix(texts):
-    # get list of dutch stopwords
-    stopwords = nltk.corpus.stopwords.words('dutch')
-
-    # get frequency matrix
-    # TODO: try using ngram_range=(1, 3)
-    vectorizer = CountVectorizer(stop_words=stopwords)
-    freq_matrix = vectorizer.fit_transform(texts)
-
-    return vectorizer.get_feature_names(), freq_matrix.toarray()
 
 
 def score_bm25(tf_dt, l_d, l_avg, n, dft):
@@ -35,26 +22,55 @@ def score_bm25(tf_dt, l_d, l_avg, n, dft):
     return normalizing_term * idf
 
 
-def fit(n_docs=30):
+def fit(text, stopwords, n_docs=0):
     # load texts
-    file_name = '../aligned_epg_transcriptions_npo1_npo2.csv'
+    file_name = 'aligned_epg_transcriptions_npo1_npo2.csv'
     data = pd.read_csv(file_name)
 
-    texts = data['text']
-    if n_docs:
-        assert n_docs > 0
-        texts = texts[:n_docs]
+    texts = list(data['text'])
+    texts.insert(0, text)
+
+    # reduce amount of documents
+    # if n_docs:
+    #     assert n_docs > 0
+    #     texts = texts[:n_docs]
 
     # get word list and frequency matrix (an ndarray where rows=documents and cols=words)
-    words, freq_matrix = get_freq_matrix(texts)
-    return words, freq_matrix
+    vectorizer = CountVectorizer(stop_words=stopwords,
+                                 strip_accents='unicode',
+                                 ngram_range=(1, 3))
+    freq_matrix = vectorizer.fit_transform(texts)
 
-
-def preprocess(text):
-    t = text.translate(None, string.punctuation).lower()
-    return t
+    return vectorizer.get_feature_names(), freq_matrix.toarray()
 
 
 def bm25(text, n=5):
-    words, freq_matrix = fit()
-    pass
+    # get list of dutch stopwords
+    stopwords = nltk.corpus.stopwords.words('dutch')
+
+    # get statistics for the data. the text is at position 0 in the frequency matrix
+    words, freq_matrix = fit(text, stopwords)
+
+    # global parameters
+    l_avg = np.mean(freq_matrix.sum(axis=1))
+    n = freq_matrix.shape[0]
+
+    # document parameters
+    l_d = sum(freq_matrix[0])
+
+    # indices of the possible document keywords
+    keyword_idxs = np.nonzero(freq_matrix[0])[0].tolist()
+
+    # compute bm25 scores
+    scores = []
+    for idx in keyword_idxs:
+        # term level
+        tf_dt = freq_matrix[0, idx]
+        dft = np.count_nonzero(freq_matrix[:, idx])
+        s = score_bm25(tf_dt, l_d, l_avg, n, dft)
+        scores.append((words[idx], s))
+
+    scores = sorted(scores, key=lambda x: x[1], reverse=True)
+    keywords = [pair[0] for pair in scores]
+
+    return keywords[0:n] if len(keywords) >= n else keywords
