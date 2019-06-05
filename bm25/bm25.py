@@ -5,11 +5,17 @@ from math import log
 from sklearn.feature_extraction.text import CountVectorizer
 
 
-def score_bm25(tf_dt, l_d, l_avg, n, dft):
+def score_bm25(tf_dt, l_d, l_avg, n_docs, dft):
     """
     BM25 with the second term removed. That term regulates the importance of words
     given how often they occur in a query, but since we're dealing with single word queries
     it's unnecessary.
+    :param tf_dt: Frequency of term T in document D
+    :param l_d: Length of document D
+    :param l_avg: Average length for all documents
+    :param n_docs: Total number of documents
+    :param dft: Number of documents that contain term T
+    :return: The BM25 score for term T in document D
     """
     # tunable parameters
     k1 = 1.5
@@ -18,22 +24,26 @@ def score_bm25(tf_dt, l_d, l_avg, n, dft):
     # equation
     k = k1 * ((1 - b) + b * (l_d / l_avg))
     normalizing_term = ((k1 + 1) * tf_dt) / (k + tf_dt)
-    idf = log(n / dft)
+    idf = log(n_docs / dft)
     return normalizing_term * idf
 
 
-def fit(text, stopwords, n_docs=0):
+def fit(text, stopwords):
+    """
+    Process the given text along with the full dataset to produce a word vocabulary
+    and a frequency matrix.
+    :param text: Text from which the keywords will be extracted
+    :param stopwords: List of stopwords to be removed from all texts
+    :return: The word vocabulary from the text collection, and a frequency matrix for those words
+        (i.e. a matrix where rows=documents and cols=words)
+    """
     # load texts
     file_name = 'aligned_epg_transcriptions_npo1_npo2.csv'
     data = pd.read_csv(file_name)
-
     texts = list(data['text'])
-    texts.insert(0, text)
 
-    # reduce amount of documents
-    # if n_docs:
-    #     assert n_docs > 0
-    #     texts = texts[:n_docs]
+    # insert the document at the top of the list
+    texts.insert(0, text)
 
     # get word list and frequency matrix (an ndarray where rows=documents and cols=words)
     vectorizer = CountVectorizer(stop_words=stopwords,
@@ -44,7 +54,40 @@ def fit(text, stopwords, n_docs=0):
     return vectorizer.get_feature_names(), freq_matrix.toarray()
 
 
+def remove_redundancy(keywords):
+    """
+    For each keyword in the keywords list, remove redundant keywords with a lower score compared
+    to the original. This is done by comparing keywords which length differs by only one word,
+    and checking for overlap.
+    :param keywords: Ordered list of keywords
+    :return: Filtered list of keywords
+    """
+    k_lens = [len(k.split(' ')) for k in keywords]
+
+    c_idx = 0
+    while c_idx < len(keywords):
+        idx = 0
+        while idx < len(keywords):
+            # check that the length of the two keywords differs by only one,
+            # and check whether one is a substring of the other
+            if (k_lens[c_idx] - 1) <= k_lens[idx] <= k_lens[c_idx] + 1 \
+                    and (keywords[c_idx] in keywords[idx] or keywords[idx] in keywords[c_idx]):
+
+                # remove the lower scored keyword
+                del keywords[idx]
+
+            idx += 1
+        c_idx += 1
+
+    return keywords
+
+
 def bm25(text, n=5):
+    """
+    :param text: Text that the keywords are extracted from
+    :param n: Number of keywords to return
+    :return: Top n keywords, ordered from most to least relevant
+    """
     # get list of dutch stopwords
     stopwords = nltk.corpus.stopwords.words('dutch')
 
@@ -53,7 +96,7 @@ def bm25(text, n=5):
 
     # global parameters
     l_avg = np.mean(freq_matrix.sum(axis=1))
-    n = freq_matrix.shape[0]
+    n_docs = freq_matrix.shape[0]
 
     # document parameters
     l_d = sum(freq_matrix[0])
@@ -67,10 +110,14 @@ def bm25(text, n=5):
         # term level
         tf_dt = freq_matrix[0, idx]
         dft = np.count_nonzero(freq_matrix[:, idx])
-        s = score_bm25(tf_dt, l_d, l_avg, n, dft)
+        s = score_bm25(tf_dt, l_d, l_avg, n_docs, dft)
         scores.append((words[idx], s))
 
+    # reorder and extract keywords
     scores = sorted(scores, key=lambda x: x[1], reverse=True)
     keywords = [pair[0] for pair in scores]
+
+    # filter keywords by removing redundancy
+    keywords = remove_redundancy(keywords)
 
     return keywords[0:n] if len(keywords) >= n else keywords

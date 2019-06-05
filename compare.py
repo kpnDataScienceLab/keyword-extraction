@@ -10,6 +10,9 @@ texts = data['text']
 
 n = 8
 
+print()
+print("   " + "[TFIDF]".ljust(45) + "[BM25]".ljust(45) + "[RAKE]".ljust(45) + "[YAKE]")
+
 for i, text in enumerate(texts[0:5]):
 
     tfidf_words = tfidf(text, n=n)
@@ -19,6 +22,7 @@ for i, text in enumerate(texts[0:5]):
 
     print()
     print(f"Document {i + 1}:")
+    print()
     for idx in range(n):
         if idx >= len(tfidf_words):
             tfidf_words.append("---")
@@ -26,6 +30,8 @@ for i, text in enumerate(texts[0:5]):
             rake_words.append("---")
         if idx >= len(yake_words):
             yake_words.append("---")
-        print(f"{idx + 1}. [TF-IDF]: {tfidf_words[idx]} \t\t[BM25]: {bm25_words[idx]} "
-              f"\t\t[RAKE]: {rake_words[idx]} \t\t[YAKE]: {yake_words[idx]}")
+        if idx >= len(bm25_words):
+            bm25_words.append("---")
 
+        print(f"{idx + 1}. " + tfidf_words[idx].ljust(45) + bm25_words[idx].ljust(45)
+              + rake_words[idx].ljust(45) + yake_words[idx])
