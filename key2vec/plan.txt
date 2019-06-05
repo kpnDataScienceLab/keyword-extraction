@@ -1,13 +1,9 @@
-For a single text:
-
 Candidate selection
 
 	1. Use spacy for named entity recognition and apply all filters mentioned in the paper
 	2. Use regex for a few more filters and filter phrases longer than 3 words [15 mins]
-	3. QUESTION MARK
-		- Use fasttext to get representations for the key phrases by taking the mean embedding https://fasttext.cc/docs/en/crawl-vectors.html
-		- Use a phrase2vec model, e.g. https://github.com/Separius/awesome-sentence-embedding and https://github.com/epfml/sent2vec
-	
+	3. [x] Use fasttext to get representations for the key phrases by taking the mean embedding https://fasttext.cc/docs/en/crawl-vectors.html
+	   [ ] Use a phrase2vec model, e.g. https://github.com/Separius/awesome-sentence-embedding and https://github.com/epfml/sent2vec
 
 Candidate scoring
 

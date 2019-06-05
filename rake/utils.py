@@ -12,7 +12,7 @@ def get_texts(fname):
     :return: a list of strings where each string is a text
     """
     ts = pd.read_csv(fname)["text"]
-    return [re.sub(r"'([^']+)',?\s", r"\1 ", t) for t in ts]
+    return ts
 
 
 def get_stopwords(size):
