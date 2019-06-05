@@ -1,0 +1,33 @@
+For a single text:
+
+Candidate selection
+
+	1. Use spacy for named entity recognition and apply all filters mentioned in the paper
+	2. Use regex for a few more filters and filter phrases longer than 3 words [15 mins]
+	3. QUESTION MARK
+		- Use fasttext to get representations for the key phrases by taking the mean embedding https://fasttext.cc/docs/en/crawl-vectors.html
+		- Use a phrase2vec model, e.g. https://github.com/Separius/awesome-sentence-embedding and https://github.com/epfml/sent2vec
+	
+
+Candidate scoring
+
+	4. Compute the theme vector using whatever sentence representation used for 3.
+	5. Compute cosine similarity between all candidate words and theme vector.
+	6. Rescale scores from 0 to 1.
+
+Candidate ranking
+	
+	7. Construct an adjacency matrix. The nodes are the candidate keywords. Edges are created if they co-occur in a window size of 5.
+	8. Compute edge weights using:
+	
+					 1
+edge(x, y) = ------------------ * PMI(x, y)
+			  1 - cosine(x, y)
+
+Where:
+
+                 P(x, y)          P(x | y)
+PMI(x, y) = log ---------- = log ----------
+                 P(x)P(y)           P(x)
+	
+	9. Use formula 4 from the paper to compute the final ranking score.
