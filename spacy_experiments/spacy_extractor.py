@@ -130,11 +130,13 @@ def main():
 
 	dutch_nlp = spacy.load("nl_core_news_sm")
 
+	# Given the raw data, clean it up and arrange the sentences into 
+	# coherent sentence strings. 
 	sentence_strings = extractSentences(transcripts[200], dutch_nlp)
 
 	
 
-	
+
 
 if __name__ == '__main__':
 	main()
