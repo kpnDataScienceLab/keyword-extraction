@@ -13,7 +13,7 @@ n = 8
 print()
 print("   " + "[TFIDF]".ljust(45) + "[BM25]".ljust(45) + "[RAKE]".ljust(45) + "[YAKE]")
 
-for i, text in enumerate(texts[0:5]):
+for i, text in enumerate(texts[5:10]):
 
     tfidf_words = tfidf(text, n=n)
     bm25_words = bm25(text, n=n)
