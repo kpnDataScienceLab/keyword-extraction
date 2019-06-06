@@ -2,12 +2,27 @@ import io
 import pickle
 import pandas as pd
 import string
+import re
+from tqdm import tqdm
 
 
 def clean_text(text):
-    text = text.translate(str.maketrans('', '', string.punctuation))
-    text = text.lower()
+    # remove punctuation
+    punctuation = string.punctuation.replace('-', '')
+    text = text.translate(str.maketrans(punctuation, ' ' * len(punctuation)))
 
+    # remove numbers
+    # numbers = '1234567890'
+    # text = text.translate(str.maketrans(numbers, ' ' * len(numbers)))
+
+    # remove leading or trailing dashes
+    text = re.sub(r'- | -', ' ', text)
+
+    # remove duplicate spaces
+    text = re.sub(r' +', ' ', text)
+
+    # make text lowercase
+    text = text.lower()
     return text
 
 
@@ -19,26 +34,31 @@ def get_data_vocabulary():
     vocab = set()
     for t in texts:
         clean_t = clean_text(t)
+        vocab.update(clean_t.split(' '))
+
+    return vocab
 
 
-# TODO: fix this to read one line at a time
-def get_embeddings():
-    fname = 'cc.nl.300.vec'
+def get_embeddings(vocab):
+    fname = 'embeddings/cc.nl.300.vec'
 
     fin = io.open(fname, 'r', encoding='utf-8', newline='\n', errors='ignore')
-    n, d = map(int, fin.readline().split())
 
-    data = {}
+    embeddings = {}
 
-    for line in fin:
+    for line in tqdm(fin, ncols=120, total=2000000):
         tokens = line.rstrip().split(' ')
-        data[tokens[0]] = map(float, tokens[1:])
+        if tokens[0] in vocab:
+            embeddings[tokens[0]] = [float(t) for t in tokens[1:]]
+
+    return embeddings
 
 
 def main():
     # get a set containing all stemmed words in the dataset
     vocabulary = get_data_vocabulary()
-    embeddings = get_embeddings()
+    embeddings = get_embeddings(vocabulary)
+
     with open('fasttext_embeddings.pkl', 'wb') as handle:
         pickle.dump(embeddings, handle)
 

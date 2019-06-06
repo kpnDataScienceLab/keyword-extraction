@@ -14,16 +14,12 @@ Candidate scoring
 Candidate ranking
 	
 	7. Construct an adjacency matrix. The nodes are the candidate keywords. Edges are created if they co-occur in a window size of 5.
+	    https://stackoverflow.com/questions/17458751/python-symmetric-word-matrix-using-nltk
 	8. Compute edge weights using:
 	
-					 1
-edge(x, y) = ------------------ * PMI(x, y)
-			  1 - cosine(x, y)
+					 1                 P(x, y)
+edge(x, y) = ------------------ * log ----------
+			  1 - cosine(x, y)         P(x)P(y)
 
-Where:
-
-                 P(x, y)          P(x | y)
-PMI(x, y) = log ---------- = log ----------
-                 P(x)P(y)           P(x)
 	
 	9. Use formula 4 from the paper to compute the final ranking score.

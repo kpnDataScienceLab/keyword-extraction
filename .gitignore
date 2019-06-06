@@ -1,5 +1,6 @@
 # Project related
 fasttext/embeddings/
+key2vec/embeddings/
 
 # PyCharm
 .idea/
