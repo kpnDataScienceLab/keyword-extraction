@@ -2,6 +2,7 @@ import spacy, nl_core_news_sm
 from cleandata import *
 from spacy import displacy
 import argparse
+from spacy.lang.nl.stop_words import STOP_WORDS
 
 """
 
@@ -12,12 +13,11 @@ from preprocessing.candidatekeywords import candidateKeywords
 dutch_nlp = spacy.load("nl_core_news_sm")
 
 # 2. 
-
-
+index = 42
+input_path = "clean_week_1_transcripts.txt"
+candidates = candidateKeywords(index, dutch_nlp, input_path)
 
 """
-
-
 
 
 def filterNounChunks(nlp_document):
@@ -65,6 +65,27 @@ def filterEntities(nlp_document):
 	return entities
 
 """
+Function removes keyphrases containing special symbols. 
+"""
+def removeSpecials(candidate_list):
+	pass
+
+"""
+Function removes kephrases of length 1
+"""
+def remove1letterWords(candidate_list):
+	pass
+
+"""
+Function removes keyphrases of length longer than k = 5
+"""
+def keywordsLongerThanK(candidate_list):
+	pass 
+
+def removeStopWords(candidate_list):
+	return list(set(candidate_list) - set(STOP_WORDS))
+
+"""
 Function candidateKeywords takes as input the index 
 of the transcript we are interested in and a loaded 
 spacy model for dutch "nl_core_news_sm". 
@@ -82,8 +103,15 @@ def candidateKeywords(tranIndex, dutch_nlp, input_filename = "clean_week_1_trans
 		candidates += filterNounChunks(doc)
 		candidates += simpleNouns(doc)
 
+	print("Before duplicate removal: ", len(candidates))
 	candidates = removeDuplicates(candidates)
+	print("After duplicate removal: ", len(candidates))
 
+	print("Before stopword removal: ", len(candidates))
+	candidates = removeStopWords(candidates)
+	print("After stopword removal: ", len(candidates))
+
+	print(len(candidates))
 	return candidates
 
 
@@ -100,10 +128,12 @@ def main():
 	# 2. Load spacy model
 	dutch_nlp = spacy.load("nl_core_news_sm")
 
-	print("---------INPUT----------")
-	print(readCleanTranscript(input_filename, ARGS.trans))
-	print("---------OUTPUT---------")
-	print(candidateKeywords(ARGS.trans, dutch_nlp, input_filename))
+	print("---------INPUT (cleaned transcript)----------\n")
+	for sent in readCleanTranscript(input_filename, ARGS.trans):
+		print(sent)
+	print("\n---------OUTPUT (Candidate Keywords)---------\n")
+	for key in candidateKeywords(ARGS.trans, dutch_nlp, input_filename):
+		print(key)
 
 
 	# joseph = "Voor het grote huis van mijn grote ouders ligt een kleine hond"
