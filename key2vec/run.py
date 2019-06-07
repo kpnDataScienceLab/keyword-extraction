@@ -23,4 +23,4 @@ if len(show_description) == 0:
 else:
     topic = show_description.iloc[0]
 
-keywords = key2vec(text, show_description, n=5)
+keywords = key2vec(text, topic, n=5)

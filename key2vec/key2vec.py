@@ -4,6 +4,7 @@ import nltk
 import pickle
 import numpy as np
 from scipy.spatial.distance import cosine
+from collections import defaultdict
 
 with open('embeddings/fasttext_embeddings.pkl', 'rb') as handle:
     embeddings = pickle.load(handle)
@@ -47,6 +48,34 @@ def get_topic_vector(topic_description):
     topic_description = clean_text(topic_description)
     words = topic_description.split()
     return np.mean([fasttext(w) for w in words], axis=0)
+
+
+# TODO: adapt code for our purpose
+def get_cooccurrence_matrix(text, candidates):
+    """
+    Builds a co-occurrence matrix for all candidate words in the text. 1 is added to an entry
+    if the two candidate keyphrases co-occur within a window size W
+    :param text: A cleaned up text where the candidate words may be accurately matched
+    :param candidates: A list of keyphrases extracted from the text
+    :return: A co-occurrence matrix for the words in candidates
+    """
+
+    split_text = text.split()
+
+    print('#' * 100)
+    print(split_text)
+    print('#' * 100)
+    print(candidates)
+
+    matrix = defaultdict(lambda: defaultdict(lambda: 0))
+
+    for sent in sent_tokenize(text):
+        words = word_tokenize(sent)
+        for word1 in words:
+            for word2 in words:
+                matrix[word1][word2] += 1
+
+    return matrix
 
 
 def key2vec(text, topic_description, n=5):
@@ -97,6 +126,9 @@ def key2vec(text, topic_description, n=5):
     # ------ CANDIDATE RANKING ------
 
     # TODO: implement candidate ranking
+
+    matrix = get_cooccurrence_matrix(text, candidates)
+
     raise NotImplementedError
 
     keywords = []
