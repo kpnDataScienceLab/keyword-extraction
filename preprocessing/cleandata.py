@@ -122,8 +122,6 @@ def readCleanTranscript(input_path, transcriptIdx):
 	end_index = [x for x in range(len(lines)) if \
 		(("#clean_transcript#" + str(transcriptIdx + 1)) in lines[x])][0]
 
-	print(start_index, end_index)
-
 	clean_sentences = []
 	for sentence in lines[start_index + 1 : end_index]:
 		clean_sentences.append(sentence.rstrip())
