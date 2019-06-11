@@ -28,7 +28,7 @@ def average_precision(labels, predictions, k=10):
     return score / tp_fp
 
 
-def map(labels_list, predictions_list, k=10):
+def mean_ap(labels_list, predictions_list, k=10):
     """
     Returns the mean average precision for a series of ranking attempts.
     :param labels_list: A list of lists, where each list contains the ground truth keywords for a text.
@@ -74,7 +74,7 @@ def f1(labels, predictions, k=10):
     return (2 * precision * recall) / (precision + recall)
 
 
-def mf1(labels_list, predictions_list, k=10):
+def mean_f1(labels_list, predictions_list, k=10):
     """
     Returns the mean F1 score for a series of ranking attempts.
     :param labels_list: A list of lists, where each list contains the ground truth keywords for a text.
