@@ -19,8 +19,10 @@ candidates = candidateKeywords(index, dutch_nlp, input_path)
 
 """
 
-
-def filterNounChunks(nlp_document):
+def isNounChunkInText(chunk_candidate, raw_text):
+	return chunk_candidate in raw_text
+	
+def filterNounChunks(nlp_document, raw_text, useExistFilter = True):
 	
 	# for token in nlp_document:
 	# 	print(token.text, token.pos_, token.dep_, ' <---- ' , token.head.text, token.head.pos_,
@@ -42,7 +44,14 @@ def filterNounChunks(nlp_document):
 			current_chunk += (token.text + ' ' + child_chunk)
 			if(current_chunk[-1] == ' '):
 				current_chunk = current_chunk[:-1]
-			noun_chunks.append(current_chunk)
+			# Only add candidates that actually occured. 
+			# (As a safety measure for difficult phrases)
+			if useExistFilter:
+				if isNounChunkInText(current_chunk, raw_text):
+					noun_chunks.append(current_chunk)
+			else:
+				noun_chunks.append(current_chunk)
+
 			current_chunk = ""
 			child_chunk = ""
 
@@ -66,22 +75,45 @@ def filterEntities(nlp_document):
 
 """
 Function removes keyphrases containing special symbols. 
+
+NOTE: We allow & and @ to appear within keywords!
+
 """
 def removeSpecials(candidate_list):
-	pass
+	for phrase in candidate_list:
+		# Only check for letters within the keyphrase
+		# (not first or last)
+		for letter in range(1, len(phrase) - 1):
+			
+			if phrase[letter] in ['!', '#', '$', '%', \
+									'^', '*', '(', ')', 
+									'{', '}', '|', '~', '$', ',',
+									'?']:
+				candidate_list.remove(phrase)
+				break
+	return candidate_list
 
 """
 Function removes kephrases of length 1
 """
 def remove1letterWords(candidate_list):
-	pass
+	for phrase in candidate_list:
+		if len(phrase) == 1:
+			candidate_list.remove(phrase)
+	return candidate_list
 
 """
 Function removes keyphrases of length longer than k = 5
 """
-def keywordsLongerThanK(candidate_list):
-	pass 
+def removeKeywordsLongerThanK(candidate_list, k = 5):
+	for keyphrase in candidate_list:
+		if (len(keyphrase.split()) > k):
+			candidate_list.remove(keyphrase)
+	return candidate_list
 
+"""
+Remove all stopwords defined by spacy for dutch
+"""
 def removeStopWords(candidate_list):
 	return list(set(candidate_list) - set(STOP_WORDS))
 
@@ -93,27 +125,48 @@ Returns a list of candidate keywords based on
 entities and noun-phrases. 
 
 """
-def candidateKeywords(tranIndex, dutch_nlp, input_filename = "clean_week_1_transcripts.txt"):
+def candidateKeywords(tranIndex, dutch_nlp, 
+						input_filename = "clean_week_1_transcripts.txt",
+						useExistFilter = True):
 
-	cleanTranscript = readCleanTranscript(input_filename, tranIndex)
+	cleanTranscript = ''.join(readCleanTranscript(input_filename, tranIndex))
 	candidates = []
-	for cleanTrans in cleanTranscript:
-		doc = dutch_nlp(cleanTrans)
-		candidates += filterEntities(doc)
-		candidates += filterNounChunks(doc)
-		candidates += simpleNouns(doc)
+	
+	# Process all sentences as one big text
+	doc = dutch_nlp(cleanTranscript)
+	# Find entities, noun-phrases and simple nouns
+	candidates += filterEntities(doc)
+	candidates += filterNounChunks(doc, cleanTranscript, 
+					useExistFilter = useExistFilter)
+	candidates += simpleNouns(doc)
 
-	print("Before duplicate removal: ", len(candidates))
-	candidates = removeDuplicates(candidates)
-	print("After duplicate removal: ", len(candidates))
-
-	print("Before stopword removal: ", len(candidates))
-	candidates = removeStopWords(candidates)
-	print("After stopword removal: ", len(candidates))
-
-	print(len(candidates))
 	return candidates
 
+def finalFilter(candidate_list, k = 5):
+
+	# Remove duplicates
+	print("Before duplicate removal: ", len(candidate_list))
+	candidate_list = removeDuplicates(candidate_list)
+	print("After duplicate removal: ", len(candidate_list))
+
+	# Remove any remaining stopwords
+	candidate_list = removeStopWords(candidate_list)
+	print("After stopword removal: ", len(candidate_list))
+
+	# Remove candidate_list that are too long
+	candidate_list = removeKeywordsLongerThanK(candidate_list, k = k)
+	print("After length filtering k = 5: ", len(candidate_list))
+
+	# Remove keywords with special characters such as "Madag%ascar"
+	candidate_list = removeSpecials(candidate_list)
+	print("After filtering specials: ", len(candidate_list))
+
+	# Remove keywords with only 1 letter
+	candidate_list = remove1letterWords(candidate_list)
+	print("After removing \"1 letters\": ", len(candidate_list))
+
+
+	return candidate_list
 
 def main():
 
@@ -128,17 +181,23 @@ def main():
 	# 2. Load spacy model
 	dutch_nlp = spacy.load("nl_core_news_sm")
 
-	print("---------INPUT (cleaned transcript)----------\n")
-	for sent in readCleanTranscript(input_filename, ARGS.trans):
-		print(sent)
+	# print("---------INPUT (cleaned transcript)----------\n")
+	print(''.join(readCleanTranscript(input_filename, ARGS.trans)))
 	print("\n---------OUTPUT (Candidate Keywords)---------\n")
-	for key in candidateKeywords(ARGS.trans, dutch_nlp, input_filename):
+	keyphrases = candidateKeywords(ARGS.trans, 
+									dutch_nlp, 
+									input_filename,
+									useExistFilter = True)
+
+	# This final filter removes any keyphrases with special 
+	# characters in them, length above a threshold k or keywords 
+	# that contain only a single letter
+	keyphrases = finalFilter(keyphrases, k = 5)
+
+	for key in keyphrases:
 		print(key)
 
-
 	# joseph = "Voor het grote huis van mijn grote ouders ligt een kleine hond"
-	# print(joseph)
-	# print(filterNounChunks(dutch_nlp(joseph)))
 
 if __name__ == '__main__':
 	main()
