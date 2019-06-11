@@ -11,12 +11,14 @@ from preprocessing.candidatekeywords import candidateKeywords
 
 # 1. 
 dutch_nlp = spacy.load("nl_core_news_sm")
+english_nlp = spacy.load("en_core_web_sm")
 
 # 2. 
 index = 42
 input_path = "clean_week_1_transcripts.txt"
-candidates = candidateKeywords(index, dutch_nlp, input_path)
-
+candidates = candidateKeywords(index, dutch_nlp, input_path,
+								useExistFilter = True, k = 5)
+where...
 """
 
 def isNounChunkInText(chunk_candidate, raw_text):
@@ -115,7 +117,13 @@ def removeKeywordsLongerThanK(candidate_list, k = 5):
 Remove all stopwords defined by spacy for dutch
 """
 def removeStopWords(candidate_list):
-	return list(set(candidate_list) - set(STOP_WORDS))
+
+	for keyword in candidate_list:
+		if keyword.lower() in STOP_WORDS:
+			candidate_list.remove(keyword)
+	return candidate_list
+
+	# return list(set(candidate_list) - set(STOP_WORDS))
 
 """
 Function candidateKeywords takes as input the index 
@@ -127,9 +135,9 @@ entities and noun-phrases.
 """
 def candidateKeywords(tranIndex, dutch_nlp, 
 						input_filename = "clean_week_1_transcripts.txt",
-						useExistFilter = True):
+						useExistFilter = True, k = 5):
 
-	cleanTranscript = ''.join(readCleanTranscript(input_filename, tranIndex))
+	cleanTranscript = ' '.join(readCleanTranscript(input_filename, tranIndex))
 	candidates = []
 	
 	# Process all sentences as one big text
@@ -140,7 +148,7 @@ def candidateKeywords(tranIndex, dutch_nlp,
 					useExistFilter = useExistFilter)
 	candidates += simpleNouns(doc)
 
-	return candidates
+	return finalFilter(candidates, k = k)
 
 def finalFilter(candidate_list, k = 5):
 
@@ -173,26 +181,37 @@ def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--idx', default=0, type=int, help='which sentence')
 	parser.add_argument('--trans', default=0, type=int, help='which transcript')
+	parser.add_argument('--filename', default = "clean_transcripts_june11.txt", 
+						type = str, help = "Name of input file (clean transcript)")
+	parser.add_argument('--language', default = 'nl', type = str, 
+						help = "In which language to extract keywords")
 	ARGS = parser.parse_args()
 
 	# 1. Read transcripts
-	input_filename = "clean_week_1_transcripts.txt"
+	input_filename = ARGS.filename
 
 	# 2. Load spacy model
-	dutch_nlp = spacy.load("nl_core_news_sm")
+	if ARGS.language == 'nl':
+		nlp = spacy.load("nl_core_news_sm")
+	elif ARGS.language == 'en':
+		nlp = spacy.load("en_core_web_sm")
+	else:
+		print("Please enter valid language \n> --language nl \n> --language en")
+		return 
 
 	# print("---------INPUT (cleaned transcript)----------\n")
-	print(''.join(readCleanTranscript(input_filename, ARGS.trans)))
+	print(' '.join(readCleanTranscript(input_filename, ARGS.trans)))
 	print("\n---------OUTPUT (Candidate Keywords)---------\n")
 	keyphrases = candidateKeywords(ARGS.trans, 
-									dutch_nlp, 
+									nlp, 
 									input_filename,
-									useExistFilter = True)
+									useExistFilter = True,
+									k = 5)
 
 	# This final filter removes any keyphrases with special 
 	# characters in them, length above a threshold k or keywords 
 	# that contain only a single letter
-	keyphrases = finalFilter(keyphrases, k = 5)
+	# keyphrases = finalFilter(keyphrases, k = 5)
 
 	for key in keyphrases:
 		print(key)
