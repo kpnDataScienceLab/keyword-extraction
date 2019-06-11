@@ -2,6 +2,7 @@ import argparse
 import json
 import re
 import os
+from tqdm import tqdm
 import xml.etree.ElementTree as ElementTree
 
 
@@ -9,7 +10,7 @@ class Dataset:
 
     def __init__(self, ds_name='500N-KPCrowd'):
         # make sure the dataset is supported (mainly because of the label loading)
-        assert ds_name in ['500N-KPCrowd']
+        assert ds_name in ['500N-KPCrowd', 'DUC-2001', 'Inspec']
 
         self.ds_name = ds_name
         self.folder_name = 'ake-datasets/datasets/'
@@ -22,6 +23,10 @@ class Dataset:
         labels = {}
         if self.ds_name == '500N-KPCrowd':
             label_files = ['test.reader.json', 'train.reader.json']
+        if self.ds_name == 'DUC-2001':
+            label_files = ['test.reader.json']
+        if self.ds_name == 'Inspec':
+            label_files = ['dev.contr.json', 'test.contr.json', 'train.contr.json']
 
         for lfile in label_files:
             # load unstemmed labels
@@ -53,7 +58,8 @@ class Dataset:
             if os.path.basename(dirpath) not in data_folders:
                 continue
 
-            for fname in filenames:
+            print(f"Loading {os.path.basename(dirpath)}...")
+            for fname in tqdm(filenames, ncols=100):
 
                 # check that it's an xml file
                 if not fname.endswith('.xml'):
@@ -96,11 +102,8 @@ if __name__ == '__main__':
         "--ds_name",
         type=str,
         default='500N-KPCrowd',
-        choices=['500N-KPCrowd'],
+        choices=['500N-KPCrowd', 'DUC-2001', 'Inspec'],
         help="Name of the dataset to use"
     )
 
     flags = parser.parse_args()
-    ds = Dataset(flags.ds_name)
-    texts, labels = ds.get_texts()
-    breakpoint()
