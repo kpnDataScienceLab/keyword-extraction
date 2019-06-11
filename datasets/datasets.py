@@ -2,7 +2,6 @@ import argparse
 import json
 import re
 import os
-from tqdm import tqdm
 import xml.etree.ElementTree as ElementTree
 
 

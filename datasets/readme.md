@@ -1,5 +1,16 @@
 # Datasets
 
+### Requirements
+
+This class requires the *ake-datasets* repository, which contains a parsed
+collection of keyword extraction datasets. To download it, in thsi folder run:
+
+```
+$ git clone https://github.com/boudinfl/ake-datasets.git
+```
+
+Watch out, it will download around 11 GB of data.
+
 ### Usage
 
 In order to use the Dataset class, import it by giving it as its argument
