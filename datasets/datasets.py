@@ -45,7 +45,6 @@ class Dataset:
 
         # load labels in order to return them matched with the texts
         labels_dict = self.load_labels()
-        labels = []
 
         # loop through all documents in the training set
         for (dirpath, dirnames, filenames) in os.walk(self.ds_folder):
@@ -64,17 +63,27 @@ class Dataset:
                     continue
 
                 text = self.parse_xml(dirpath + '/' + fname)
-                text = re.sub(r" 's", "'s", text)
-                text = re.sub(r" n't", "n't", text)
+                text = self.clean_text(text)
 
                 ftitle = re.sub(r'.xml', '', fname)
                 if ftitle in labels_dict:
-                    texts.append(text)
+                    texts.append((text, [keyword for sublist in labels_dict[ftitle] for keyword in sublist]))
 
-                    # flatten keyword list (which is currently a list of single-element lists)
-                    labels.append([keyword for sublist in labels_dict[ftitle] for keyword in sublist])
+        return texts
 
-        return texts, labels
+    @staticmethod
+    def clean_text(text):
+        text = re.sub(r" 's", "'s", text)
+        text = re.sub(r" n't", "n't", text)
+        text = re.sub(r" 're", "'re", text)
+        text = re.sub(r" 'll", "'ll", text)
+        text = re.sub(r"'' `` | '' ''", '"', text)
+        text = re.sub(r" -LRB- ", " (", text)
+        text = re.sub(r" -RRB- ", ") ", text)
+        text = re.sub(r" -LSB- ", " [", text)
+        text = re.sub(r" -RSB- ", "] ", text)
+        return text
+
 
     @staticmethod
     def parse_xml(file_path):

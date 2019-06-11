@@ -3,7 +3,7 @@
 ### Requirements
 
 This class requires the *ake-datasets* repository, which contains a parsed
-collection of keyword extraction datasets. To download it, in thsi folder run:
+collection of keyword extraction datasets. To download it, in this folder run:
 
 ```
 $ git clone https://github.com/boudinfl/ake-datasets.git
