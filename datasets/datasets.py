@@ -14,6 +14,7 @@ class Dataset:
         self.ds_name = ds_name
         self.folder_name = os.path.dirname(os.path.realpath(__file__)) + '/ake-datasets/datasets/'
         self.ds_folder = self.folder_name + self.ds_name
+        self.texts = []
 
     def load_labels(self):
 
@@ -68,7 +69,7 @@ class Dataset:
                 ftitle = re.sub(r'.xml', '', fname)
                 if ftitle in labels_dict:
                     texts.append((text, [keyword for sublist in labels_dict[ftitle] for keyword in sublist]))
-
+        self.texts = texts
         return texts
 
     @staticmethod
@@ -101,6 +102,9 @@ class Dataset:
         tokens = [tok for doc in root for sents in doc for sent in sents for toks in sent for tok in toks]
         return ' '.join([tok[0].text for tok in tokens])
 
+    def __iter__(self):
+        for text in self.texts:
+            yield text
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

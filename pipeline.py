@@ -1,9 +1,11 @@
 from tfidf.tfidf import train,test
 import pandas as pd
+from datasets.datasets import Dataset
+from eval_metrics import mean_ap, f1
 
-file_name = 'transcriptions.csv'
-data = pd.read_csv(file_name)
-texts = data['text']
+dataset = Dataset()
+train(dataset.get_texts())
 
-train(texts)
-print(test(texts[0]))
+for (text,target) in dataset:
+	result = test(text)
+	print(f_1(result,target))
