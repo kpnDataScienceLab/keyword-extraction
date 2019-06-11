@@ -13,7 +13,7 @@ class Dataset:
         assert ds_name in ['500N-KPCrowd', 'DUC-2001', 'Inspec']
 
         self.ds_name = ds_name
-        self.folder_name = 'ake-datasets/datasets/'
+        self.folder_name = os.path.dirname(os.path.realpath(__file__)) + '/ake-datasets/datasets/'
         self.ds_folder = self.folder_name + self.ds_name
 
     def load_labels(self):
@@ -58,8 +58,7 @@ class Dataset:
             if os.path.basename(dirpath) not in data_folders:
                 continue
 
-            print(f"Loading {os.path.basename(dirpath)}...")
-            for fname in tqdm(filenames, ncols=100):
+            for fname in filenames:
 
                 # check that it's an xml file
                 if not fname.endswith('.xml'):
@@ -107,3 +106,6 @@ if __name__ == '__main__':
     )
 
     flags = parser.parse_args()
+    ds = Dataset()
+    t, l = ds.get_texts()
+    breakpoint()
