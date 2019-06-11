@@ -1,6 +1,19 @@
 import pandas as pd 
 import spacy 
 
+"""
+This file exists to ensure that the 
+text is processed in a format that 
+preserves sentence structure. This is 
+required on the TV-data since the 
+sentences are split into 'snippets'.
+Motivation: Spacy can make use of 
+sophisticated sentence parsing if 
+the sentences arrive properly. 
+"""
+
+
+
 
 def csvToTranscripts(filename = 'aligned_epg_transcriptions_npo1_npo2.csv'):
 
@@ -8,7 +21,7 @@ def csvToTranscripts(filename = 'aligned_epg_transcriptions_npo1_npo2.csv'):
 
 	# get list of texts
 	texts = data['text']
-	channels = data['channel'] #<-- can be used to see which TV show text came from 
+	channels = data['index'] #<-- can be used to see which TV show text came from 
 
 	return texts, channels
 
@@ -133,12 +146,12 @@ def readCleanTranscript(input_path, transcriptIdx):
 
 
 
-def saveTranscriptsToFile(output_path):
+def saveTranscriptsToFile(input_path, output_path):
 
 	file = open(output_path, "w+")
 
 	# 1. Read transcripts
-	transcripts, _ = csvToTranscripts("../../aligned_epg_transcriptions_npo1_npo2.csv")
+	transcripts, _ = csvToTranscripts(input_path)
 
 	dutch_nlp = spacy.load("nl_core_news_sm")
 
@@ -155,19 +168,21 @@ def saveTranscriptsToFile(output_path):
 
 if __name__ == '__main__':
 
-	output_filename = "clean_week_1_transcripts.txt"
-
-	transcripts, _ = csvToTranscripts("../../aligned_epg_transcriptions_npo1_npo2.csv")	
-
+	output_filename = "clean_transcripts_june11.txt"
+	input_path = "../transcriptions.csv"
 
 	# ------------- Uncomment this line to generate and save the clean transcripts
-	# saveTranscriptsToFile(output_filename)
+	# saveTranscriptsToFile(input_path, output_filename)
 	# ----------------------------------------------------------------------------
 	
+	transcripts, _ = csvToTranscripts(input_path)
+
 	# This is an example of how to access transcripts from now on. 
 	# Note that this is NOT the proposed candidate keywords, this is the 
 	# data used by spacy to generate those keywords. 
-	cleanTranscript45 = readCleanTranscript(output_filename, 45)
+	cleanTranscript4 = readCleanTranscript(output_filename, 4)
 	
-	print(transcripts[45])
-	print(cleanTranscript45)
+	print("Input transcript ----------------------\n")
+	print(transcripts[4])
+	print("\nCleaned up transcript -----------------\n")
+	print(cleanTranscript4)
