@@ -17,16 +17,18 @@ class Dataset:
 
     def load_labels(self):
 
+        labels_path = self.ds_folder + '/references/'
+
         labels = {}
         if self.ds_name == '500N-KPCrowd':
-            # load unstemmed labels
-            with open(self.ds_folder + '/references/test.reader.json') as handle:
-                test_labels = json.load(handle)
-            with open(self.ds_folder + '/references/train.reader.json') as handle:
-                train_labels = json.load(handle)
+            label_files = ['test.reader.json', 'train.reader.json']
 
-            # merge all labels
-            labels = {**test_labels, **train_labels}
+        for lfile in label_files:
+            # load unstemmed labels
+            with open(labels_path + lfile) as handle:
+                l = json.load(handle)
+                labels = {**labels, **l}
+
         return labels
 
     def get_texts(self):
@@ -100,3 +102,5 @@ if __name__ == '__main__':
 
     flags = parser.parse_args()
     ds = Dataset(flags.ds_name)
+    texts, labels = ds.get_texts()
+    breakpoint()
