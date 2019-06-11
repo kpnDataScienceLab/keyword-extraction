@@ -1,7 +1,7 @@
 # Project related
 fasttext/embeddings/
 key2vec/embeddings/
-ake-datasets/
+datasets/ake-datasets/
 fasttext/fasttext_embeddings.pkl
 
 # PyCharm

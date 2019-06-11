@@ -8,7 +8,9 @@ To run the quantitative comparison using different datasets, download the datase
 git clone https://github.com/boudinfl/ake-datasets.git
 ```
 
-Then run the qualitative comparison using:
+## Usage
+
+To run the qualitative comparison using:
 
 ```
 python quant_eval.py [--ds]
