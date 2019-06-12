@@ -31,7 +31,7 @@ def score_bm25(tf_dt, l_d, l_avg, n_docs, dft):
     return normalizing_term * idf
 
 
-def train(dataset, lang='dutch'):
+def train(dataset, arguments, lang='dutch'):
     """
     Process the given text along with the full dataset to produce a word vocabulary
     and a frequency matrix.
@@ -84,7 +84,7 @@ def remove_redundancy(keywords):
     return keywords
 
 
-def bm25(text, n=-1):
+def test(text, arguments, n=-1, lang='dutch'):
     """
     :param text: Text that the keywords are extracted from
     :param n: Number of keywords to return. Use -1 to return all of them
