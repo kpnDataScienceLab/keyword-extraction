@@ -7,11 +7,23 @@ nltk.download('stopwords')
 
 
 """
-Other models implemented by PKE:
-	https://github.com/boudinfl/pke
-To test models use the following interface
+Written by Arvid L. June 12th
+
+To run anything using pke:
+
+pip install git+https://github.com/boudinfl/pke.git
+
+# Requirements
+python -m nltk.downloader stopwords
+python -m nltk.downloader universal_tagset
+# download the english model
+python -m spacy download en 
+
+To test models use the following interface:
+
+
 from git_pke import pke_yake, pke_textRank, pke_singleRank, \
-	pke_topicRank, pke_positionRank
+	pke_topicRank, pke_positionRank, pke_multipartieRank
 
 ## Functions are called as 
 topN = pke_yake(text, n = 5, language = 'nl')
@@ -19,7 +31,7 @@ topN = pke_textRank(text, n = 5, language = 'nl')
 topN = pke_singleRank(text, n = 5, language = 'nl')
 topN = pke_topicRank(text, n = 5, language = 'dutch')
 topN = pke_positionRank(text, n = 5, language = 'nl')
-
+topN = pke_multipartieRank(text, n = 5, language = 'dutch')
 
 """
 
@@ -31,6 +43,7 @@ textRank_extractor = pke.unsupervised.TextRank()
 singleRank_extractor = pke.unsupervised.SingleRank()
 topicRank_extractor = pke.unsupervised.TopicRank()
 posRank_extractor = pke.unsupervised.PositionRank()
+multiPartiteRank_extractor = pke.unsupervised.MultipartiteRank()
 
 def returnKeywords(topNkeyphrases):
 	output = []
@@ -109,21 +122,24 @@ def pke_positionRank(text, n = 5, language = 'nl'):
 	keyphrases = posRank_extractor.get_n_best(n = n)
 	return returnKeywords(keyphrases)
 
-
-
-# Other models:
-
-# TopicalPageRank
-def pke_topicalPageRank(text, n = 5, language = 'nl'):
-	pass
-
 # MultipartiteRank
-def pke_multipartieRank(text, n = 5, language = 'nl'):
-	pass
+def pke_multipartieRank(text, n = 5, language = 'dutch'):
+	
+	POS = {'NOUN', 'PROPN', 'ADJ'}
+	multiPartiteRank_extractor.load_document(input = text)
+	stoplist = list(string.punctuation)
+	stoplist += ['-lrb-', '-rrb-', '-lcb-', '-rcb-', '-lsb-', '-rsb-']
+	stoplist += nltk.corpus.stopwords.words(language)
+	multiPartiteRank_extractor.candidate_selection(pos = POS,
+												stoplist = stoplist)
+	multiPartiteRank_extractor.candidate_weighting(alpha = 1.1,
+												threshold = 0.74,
+												method = 'average')
+	keyphrases = multiPartiteRank_extractor.get_n_best(n = n)
+	return returnKeywords(keyphrases)
 
-# Kea
-def pke_kea(text, n = 5, language = 'nl'):
-	pass
+
+
 
 # WINGNUS
 def pke_wingnus(text, n = 5, language = 'nl'):
@@ -162,3 +178,5 @@ if __name__ == '__main__':
 	print(pke_topicRank(transcript, n = 10, language = 'dutch'))
 	print("Running positionRank:")
 	print(pke_positionRank(transcript, n = 10, language = 'nl'))
+	print("Running MultipartiteRank:")
+	print(pke_multipartieRank(transcript, n = 10, language = 'dutch'))
