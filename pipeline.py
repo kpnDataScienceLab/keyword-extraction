@@ -1,5 +1,7 @@
 from tfidf import tfidf
 from bm25 import bm25
+from rake import rake
+from git_pke import pke_multipartiterank, pke_positionrank, pke_singlerank, pke_textrank, pke_topicrank, pke_yake
 from datasets.datasets import Dataset
 from eval_metrics import mean_ap, mean_f1
 import argparse
@@ -33,7 +35,7 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001'):
     for key in f1_metrics:
         print(f"{key}:".rjust(12) + f"{f1_metrics[key]:.3f}".rjust(7))
 
-    with open(f'evaluations_{name}_{dataset_name}.csv', mode='w+') as csv_file:
+    with open(f'evaluations/evaluations_{name}_{dataset_name}.csv', mode='w+') as csv_file:
         csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         csv_writer.writerow([name] + list(ap_metrics.values()))
 
@@ -44,14 +46,27 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
+        "--yake",
+        help="Use YAKE",
+        nargs='*',
+    )
+
+    parser.add_argument(
         "--tfidf",
         help="Use tf-idf",
         nargs='*',
     )
 
+    # TODO: make this work
     parser.add_argument(
         "--bm25",
         help="Use BM25",
+        nargs='*',
+    )
+
+    parser.add_argument(
+        "--rake",
+        help="Use RAKE",
         nargs='*',
     )
 
@@ -86,6 +101,24 @@ if __name__ == "__main__":
                         'train': bm25.train,
                         'test': bm25.test,
                         'arguments': args.bm25,
+                        'k': args.k,
+                        'dataset_name': args.dataset}
+                       )
+
+    if args.rake is not None:
+        methods.append({'name': 'rake',
+                        'train': rake.train,
+                        'test': rake.test,
+                        'arguments': args.rake,
+                        'k': args.k,
+                        'dataset_name': args.dataset}
+                       )
+
+    if args.yake is not None:
+        methods.append({'name': 'yake',
+                        'train': pke_yake.train,
+                        'test': pke_yake.test,
+                        'arguments': args.yake,
                         'k': args.k,
                         'dataset_name': args.dataset}
                        )

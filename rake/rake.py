@@ -4,8 +4,13 @@ from tqdm import tqdm
 import pickle as pkl
 import argparse
 import string
+import nltk
 
 import rake.utils as utils
+
+
+def train(dataset, arguments, lang='dutch'):
+    pass
 
 
 def get_keywords(rake, text):
@@ -18,22 +23,19 @@ def save_keywords(extracted, run_id):
         pkl.dump(extracted, handle)
 
 
-def rake(text,
+def test(text,
+         arguments,
          n=-1,
-         max_length=3,
-         stopwords='nltk',
+         lang='dutch',
          punctuation=False):
 
-    # select stopword list
-    if stopwords == 'nltk':
-        stopwords = None
-    else:
-        stopwords = utils.get_stopwords(stopwords)
+    # get list of dutch stopwords
+    stopwords = nltk.corpus.stopwords.words(lang)
 
     r = Rake(
         language="dutch",
         stopwords=stopwords,
-        max_length=max_length
+        max_length=3
     )
 
     if not punctuation:

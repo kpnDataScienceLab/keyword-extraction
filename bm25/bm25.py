@@ -74,7 +74,7 @@ def remove_redundancy(keywords):
             # check that the length of the two keywords differs by only one,
             # and check whether one is a substring of the other
             if (k_lens[c_idx] - 1) <= k_lens[idx] <= k_lens[c_idx] + 1 \
-                    and (keywords[c_idx] in keywords[idx] or keywords[idx] in keywords[c_idx]):
+                    and (keywords[c_idx] in keywords[idx] or keywords[idx] in keywords[c_idx]):  # fixme
                 # remove the lower scored keyword
                 del keywords[idx]
 
@@ -84,6 +84,7 @@ def remove_redundancy(keywords):
     return keywords
 
 
+# TODO: this is way too slow
 def test(text, arguments, n=-1, lang='dutch'):
     """
     :param text: Text that the keywords are extracted from
@@ -106,24 +107,24 @@ def test(text, arguments, n=-1, lang='dutch'):
     text_freq_matrix = text_freq_matrix.toarray()
 
     # the text is at position 0 in the frequency matrix
-    text_freq_matrix = np.vstack((np.zeros(len(_words)), text_freq_matrix))
+    _freq_matrix = np.vstack((np.zeros((1, len(_words))), _freq_matrix))
 
     # update word counts given any old or new words in text_words
     for w in text_words:
 
-        h, w = text_freq_matrix.shape
+        height, width = _freq_matrix.shape
 
         if w in _words:
-            text_freq_matrix[0, _words.index(w)] += 1
+            _freq_matrix[0, _words.index(w)] += text_freq_matrix[0, text_words.index(w)]
         else:
             _words.append(w)
 
             # add one column to the matrix
-            new_matrix = np.zeros((h, w + 1))
-            new_matrix[:, :, -1] = text_freq_matrix
-            text_freq_matrix = new_matrix
+            new_matrix = np.zeros((height, width + 1))
+            new_matrix[:, :, -1] = _freq_matrix
+            _freq_matrix = new_matrix
 
-            text_freq_matrix[0, -1] += 1
+            _freq_matrix[0, -1] += text_freq_matrix[0, text_words.index(w)]
 
     # global parameters
     l_avg = np.mean(_freq_matrix.sum(axis=1))
@@ -149,6 +150,7 @@ def test(text, arguments, n=-1, lang='dutch'):
     keywords = [pair[0] for pair in scores]
 
     # filter keywords by removing redundancy
-    keywords = remove_redundancy(keywords)
+    # TODO: fix the remove_redundancy function
+    # keywords = remove_redundancy(keywords)
 
     return keywords[0:n] if len(keywords) >= n else keywords
