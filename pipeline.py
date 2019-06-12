@@ -5,7 +5,7 @@ from eval_metrics import mean_ap, mean_f1, average_precision, f1
 import argparse
 import csv
 
-def train_method(name,train,test,arguments):
+def train_method(name,train,test,arguments,n):
 	dataset = Dataset('DUC-2001')
 	train([t[0] for t in dataset.get_texts()],arguments=arguments, lang='english')
 
@@ -33,11 +33,18 @@ if __name__ == "__main__":
        help="train tfidf",
        nargs='*',	
    )
+   parser.add_argument(
+       "--n",
+       action="store_const",
+       help="train tfidf",
+       default=10
+   )
+
 
     args = parser.parse_args()
     
     if not args.tfidf is None:
-    	methods.append(('tfidf',tfidf.train,tfidf.test,args.tfidf))
+    	methods.append(('tfidf',tfidf.train,tfidf.test,args.tfidf,args.n))
 
     for m in methods:
     	train_method(*m)
