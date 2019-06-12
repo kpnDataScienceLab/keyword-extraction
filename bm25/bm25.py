@@ -5,6 +5,10 @@ from math import log
 from sklearn.feature_extraction.text import CountVectorizer
 
 
+global words
+global freq_matrix
+
+
 def score_bm25(tf_dt, l_d, l_avg, n_docs, dft):
     """
     BM25 with the second term removed. That term regulates the importance of words
@@ -28,20 +32,16 @@ def score_bm25(tf_dt, l_d, l_avg, n_docs, dft):
     return normalizing_term * idf
 
 
-def fit(text, stopwords):
+def fit(texts, text, stopwords):
     """
     Process the given text along with the full dataset to produce a word vocabulary
     and a frequency matrix.
-    :param text: Text from which the keywords will be extracted
+    :param texts: List of texts that the model will be trained on
+    :param text: Text that will be used for keyword extraction
     :param stopwords: List of stopwords to be removed from all texts
     :return: The word vocabulary from the text collection, and a frequency matrix for those words
         (i.e. a matrix where rows=documents and cols=words)
     """
-    # load texts
-    file_name = 'aligned_epg_transcriptions_npo1_npo2.csv'
-    data = pd.read_csv(file_name)
-    texts = list(data['text'])
-
     # insert the document at the top of the list
     texts.insert(0, text)
 
@@ -82,16 +82,23 @@ def remove_redundancy(keywords):
     return keywords
 
 
-def bm25(text, n=5):
+def bm25(text, n=5, lang='dutch'):
     """
     :param text: Text that the keywords are extracted from
     :param n: Number of keywords to return
+    :param lang: Language for the stopwords
     :return: Top n keywords, ordered from most to least relevant
     """
+    # check model has been trained
+    if words is None or freq_matrix is None:
+        print("BM25 hasn't been trained! Aborting...")
+
     # get list of dutch stopwords
-    stopwords = nltk.corpus.stopwords.words('dutch')
+    stopwords = nltk.corpus.stopwords.words(lang)
 
     # get statistics for the data. the text is at position 0 in the frequency matrix
+    global words
+    global freq_matrix
     words, freq_matrix = fit(text, stopwords)
 
     # global parameters
