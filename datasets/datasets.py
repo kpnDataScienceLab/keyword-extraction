@@ -16,6 +16,9 @@ class Dataset:
         self.ds_folder = self.folder_name + self.ds_name
         self.texts = []
 
+    def __len__(self):
+        return len(self.texts)
+
     def load_labels(self):
 
         labels_path = self.ds_folder + '/references/'
@@ -79,6 +82,7 @@ class Dataset:
         text = re.sub(r" 're", "'re", text)
         text = re.sub(r" 'll", "'ll", text)
         text = re.sub(r"'' `` | '' ''", '"', text)
+        text = re.sub(r"`` | ''", '"', text)
         text = re.sub(r" -LRB- ", " (", text)
         text = re.sub(r" -RRB- ", ") ", text)
         text = re.sub(r" -LSB- ", " [", text)

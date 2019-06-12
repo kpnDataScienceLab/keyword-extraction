@@ -37,14 +37,20 @@ def mean_ap(labels_list, predictions_list, k=10):
     :param labels_list: A list of lists, where each list contains the ground truth keywords for a text.
     :param predictions_list: A list of lists, where each list contains the predicted keywords for a text.
     :param k: The cutoff value for computing the average precision. With k==0, all items are used.
-    :return: The mean average precision score for the whole set.
+    :return: A dictionary with 5 statistics from the list of average precision scores
     """
     ap_scores = []
 
     for labels, predictions in zip(labels_list, predictions_list):
         ap_scores.append(average_precision(labels, predictions, k))
 
-    return np.mean(ap_scores)
+    results = {'mean': np.mean(ap_scores),
+               'std': np.std(ap_scores),
+               'min': np.min(ap_scores),
+               'max': np.max(ap_scores),
+               'median': np.median(ap_scores)}
+
+    return results
 
 
 def f1(labels, predictions, k=10):
@@ -86,11 +92,17 @@ def mean_f1(labels_list, predictions_list, k=10):
     :param labels_list: A list of lists, where each list contains the ground truth keywords for a text.
     :param predictions_list: A list of lists, where each list contains the predicted keywords for a text.
     :param k: The cutoff value for computing the average precision. With k==0, all items are used.
-    :return: The mean average precision score for the whole set.
+    :return: A dictionary with 5 statistics from the list of F1 scores
     """
     f1_scores = []
 
     for labels, predictions in zip(labels_list, predictions_list):
         f1_scores.append(f1(labels, predictions, k))
 
-    return np.mean(f1_scores)
+    results = {'mean': np.mean(f1_scores),
+               'std': np.std(f1_scores),
+               'min': np.min(f1_scores),
+               'max': np.max(f1_scores),
+               'median': np.median(f1_scores)}
+
+    return results
