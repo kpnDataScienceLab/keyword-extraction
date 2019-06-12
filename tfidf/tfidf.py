@@ -1,8 +1,9 @@
 import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
+
 nltk.download('stopwords')
 
-global _model  
+global _model
 
 
 def get_top_n_tfidf(response, feature_names, n=5):
