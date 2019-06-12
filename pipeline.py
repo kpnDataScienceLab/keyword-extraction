@@ -3,7 +3,7 @@ import pandas as pd
 from datasets.datasets import Dataset
 from eval_metrics import mean_ap, mean_f1, average_precision, f1
 import argparse
-
+import csv
 
 def train_method(name,train,test,arguments):
 	dataset = Dataset('DUC-2001')
@@ -17,6 +17,9 @@ def train_method(name,train,test,arguments):
 		print(f"AP score: {average_precision(predictions, targets)}")
 		print()
 
+	with open('store_data.csv', mode='w+') as csv_file:
+		csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+		csv_writer.writerow([])
 
 if __name__ == "__main__":
 
