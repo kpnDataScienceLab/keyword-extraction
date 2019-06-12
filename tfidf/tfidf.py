@@ -12,7 +12,7 @@ def get_top_n_tfidf(response, feature_names, n=5):
 
 
 def train(dataset,arguments,lang='dutch'):
-    nltk.download('stopwords')
+    # nltk.download('stopwords')
     global _model
     stopwords = nltk.corpus.stopwords.words(lang)
     _model = TfidfVectorizer(stop_words=stopwords, ngram_range=(1, 3))
