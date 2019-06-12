@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 
 def train_method(name, train, test, arguments,n=10,datasetname='500N-KPCrowd'):
+	print(f'evaluating {name}')
     dataset = Dataset(datasetname)
     texts_labels = dataset.get_texts()
     train([t[0] for t in texts_labels], arguments=arguments, lang='english')
@@ -25,15 +26,15 @@ def train_method(name, train, test, arguments,n=10,datasetname='500N-KPCrowd'):
         print(f"\t{key}: {ap_metrics[key]}")
 
     print()
-    print(f"F1 scores{name}:")
+    print(f"F1 scores {name}:")
     for key in f1_metrics:
         print(f"\t{key}: {f1_metrics[key]}")
     
     
 
-    with open('store_data.csv', mode='w+') as csv_file:
+    with open('evaluations.csv', mode='w+') as csv_file:
     	csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    	csv_writer.writerow(ap_metrics.values())
+    	csv_writer.writerow( [name] + list(ap_metrics.values()))
 
 if __name__ == "__main__":
 
