@@ -10,7 +10,7 @@ def get_top_n_tfidf(response, feature_names, n=5):
     d = {}
     for col in response.nonzero()[1]:
         d[feature_names[col]] = float(response[0, col])
-        return sorted(d, key=lambda key: d[key], reverse=True)[:n]
+    return sorted(d, key=lambda key: d[key], reverse=True)[:n]
 
 
 def train(dataset,lang='dutch'):
