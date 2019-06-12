@@ -1,8 +1,11 @@
-import pandas as pd
 import nltk
 import numpy as np
 from math import log
 from sklearn.feature_extraction.text import CountVectorizer
+
+global _words
+global _freq_matrix
+global _vectorizer
 
 
 def score_bm25(tf_dt, l_d, l_avg, n_docs, dft):
@@ -28,30 +31,30 @@ def score_bm25(tf_dt, l_d, l_avg, n_docs, dft):
     return normalizing_term * idf
 
 
-def fit(text, stopwords):
+def train(dataset, lang='dutch'):
     """
     Process the given text along with the full dataset to produce a word vocabulary
     and a frequency matrix.
-    :param text: Text from which the keywords will be extracted
-    :param stopwords: List of stopwords to be removed from all texts
-    :return: The word vocabulary from the text collection, and a frequency matrix for those words
-        (i.e. a matrix where rows=documents and cols=words)
+    :param dataset: List of texts that the model will be trained on
+    :param lang: Language to be used for the stopwords
     """
-    # load texts
-    file_name = 'aligned_epg_transcriptions_npo1_npo2.csv'
-    data = pd.read_csv(file_name)
-    texts = list(data['text'])
+    global _words
+    global _freq_matrix
+    global _vectorizer
 
-    # insert the document at the top of the list
-    texts.insert(0, text)
+    # get list of dutch stopwords
+    stopwords = nltk.corpus.stopwords.words(lang)
 
     # get word list and frequency matrix (an ndarray where rows=documents and cols=words)
-    vectorizer = CountVectorizer(stop_words=stopwords,
-                                 strip_accents='unicode',
-                                 ngram_range=(1, 3))
-    freq_matrix = vectorizer.fit_transform(texts)
+    _vectorizer = CountVectorizer(stop_words=stopwords,
+                                  strip_accents='unicode',
+                                  ngram_range=(1, 3))
+    freq_matrix = _vectorizer.fit_transform(dataset)
 
-    return vectorizer.get_feature_names(), freq_matrix.toarray()
+    # store trained parameters as global variables
+
+    _words = _vectorizer.get_feature_names()
+    _freq_matrix = freq_matrix.toarray()
 
 
 def remove_redundancy(keywords):
@@ -72,7 +75,6 @@ def remove_redundancy(keywords):
             # and check whether one is a substring of the other
             if (k_lens[c_idx] - 1) <= k_lens[idx] <= k_lens[c_idx] + 1 \
                     and (keywords[c_idx] in keywords[idx] or keywords[idx] in keywords[c_idx]):
-
                 # remove the lower scored keyword
                 del keywords[idx]
 
@@ -82,36 +84,65 @@ def remove_redundancy(keywords):
     return keywords
 
 
-def bm25(text, n=5):
+def bm25(text, n=-1):
     """
     :param text: Text that the keywords are extracted from
-    :param n: Number of keywords to return
+    :param n: Number of keywords to return. Use -1 to return all of them
+    :param lang: Language for the stopwords
     :return: Top n keywords, ordered from most to least relevant
     """
-    # get list of dutch stopwords
-    stopwords = nltk.corpus.stopwords.words('dutch')
+    global _words
+    global _freq_matrix
+    global _vectorizer
 
-    # get statistics for the data. the text is at position 0 in the frequency matrix
-    words, freq_matrix = fit(text, stopwords)
+    # check model has been trained
+    if _words is None or _freq_matrix is None:
+        print("[WARNING] BM25 hasn't been trained! Returning nothing...")
+        return []
+
+    # get frequency matrix for the text
+    text_freq_matrix = _vectorizer.fit_transform([text])
+    text_words = _vectorizer.get_feature_names()
+    text_freq_matrix = text_freq_matrix.toarray()
+
+    # the text is at position 0 in the frequency matrix
+    text_freq_matrix = np.vstack((np.zeros(len(_words)), text_freq_matrix))
+
+    # update word counts given any old or new words in text_words
+    for w in text_words:
+        if w in _words:
+            text_freq_matrix[0, _words.index(w)] += 1
+        else:
+            _words.append(w)
+            
+    """
+    1: add one row of 0s on top of the matrix
+    for each word in text words:
+        if it appears in words, +1 to that entry in the first row
+        if it doesn't, add it at the end of the words list and append a column of 1,0,0,0,...
+    """
+
+
+    raise NotImplementedError
 
     # global parameters
-    l_avg = np.mean(freq_matrix.sum(axis=1))
-    n_docs = freq_matrix.shape[0]
+    l_avg = np.mean(_freq_matrix.sum(axis=1))
+    n_docs = _freq_matrix.shape[0]
 
     # document parameters
-    l_d = sum(freq_matrix[0])
+    l_d = sum(_freq_matrix[0])
 
     # indices of the possible document keywords
-    keyword_idxs = np.nonzero(freq_matrix[0])[0].tolist()
+    keyword_idxs = np.nonzero(_freq_matrix[0])[0].tolist()
 
     # compute bm25 scores
     scores = []
     for idx in keyword_idxs:
         # term level
-        tf_dt = freq_matrix[0, idx]
-        dft = np.count_nonzero(freq_matrix[:, idx])
+        tf_dt = _freq_matrix[0, idx]
+        dft = np.count_nonzero(_freq_matrix[:, idx])
         s = score_bm25(tf_dt, l_d, l_avg, n_docs, dft)
-        scores.append((words[idx], s))
+        scores.append((_words[idx], s))
 
     # reorder and extract keywords
     scores = sorted(scores, key=lambda x: x[1], reverse=True)

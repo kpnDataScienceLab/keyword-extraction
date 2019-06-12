@@ -9,7 +9,7 @@ def average_precision(labels, predictions, k=10):
     :param k: The cutoff value for computing the average precision. If k==0, all items are used.
     :return: The average precision score for the current list.
     """
-    if not labels:
+    if not labels or not predictions:
         return 0.0
 
     if k:
@@ -23,6 +23,9 @@ def average_precision(labels, predictions, k=10):
         if p in labels and p not in predictions[:i]:
             tp += 1.0
             score += tp / (i + 1.0)
+
+    if tp == 0.:
+        return 0.
 
     tp_fp = min(len(labels), k) if k else len(labels)
     return score / tp_fp
@@ -52,7 +55,7 @@ def f1(labels, predictions, k=10):
     :param k: The cutoff value for computing the average precision. If k==0, all items are used.
     :return: The F1 score for the current list.
     """
-    if not labels:
+    if not labels or not predictions:
         return 0.0
 
     if k:
@@ -67,6 +70,9 @@ def f1(labels, predictions, k=10):
 
     tp_fp = min(len(labels), k) if k else len(labels)
     tp_fn = len(labels)
+
+    if tp == 0.:
+        return 0.
 
     precision = tp / tp_fp
     recall = tp / tp_fn
