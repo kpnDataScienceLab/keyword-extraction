@@ -14,7 +14,7 @@ class Dataset:
         self.ds_name = ds_name
         self.folder_name = os.path.dirname(os.path.realpath(__file__)) + '/ake-datasets/datasets/'
         self.ds_folder = self.folder_name + self.ds_name
-        self.texts = []
+        self.build_dataset()
 
     def __len__(self):
         return len(self.texts)
@@ -39,13 +39,14 @@ class Dataset:
 
         return labels
 
-    def get_texts(self):
+    def build_dataset(self):
         """
         Processes all xml files in a folder from the ake-datasets colection and returns a dictionary
         with a text for each file
         :return: Two lists containing all texts and labels
         """
-        texts = []
+        self.texts = []
+        self.labels = []
 
         # load labels in order to return them matched with the texts
         labels_dict = self.load_labels()
@@ -71,9 +72,8 @@ class Dataset:
 
                 ftitle = re.sub(r'.xml', '', fname)
                 if ftitle in labels_dict:
-                    texts.append((text, [keyword for sublist in labels_dict[ftitle] for keyword in sublist]))
-        self.texts = texts
-        return texts
+                    self.texts.append(text)
+                    self.labels.append([keyword for sublist in labels_dict[ftitle] for keyword in sublist])
 
     @staticmethod
     def clean_text(text):
@@ -88,7 +88,6 @@ class Dataset:
         text = re.sub(r" -LSB- ", " [", text)
         text = re.sub(r" -RSB- ", "] ", text)
         return text
-
 
     @staticmethod
     def parse_xml(file_path):
@@ -109,6 +108,7 @@ class Dataset:
     def __iter__(self):
         for text in self.texts:
             yield text
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

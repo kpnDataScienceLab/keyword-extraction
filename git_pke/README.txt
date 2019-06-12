@@ -10,5 +10,3 @@ python -m nltk.downloader universal_tagset
 # download the english model
 python -m spacy download en 
 
-# See file pke_dutchTV_test.py for an example of how 
-# to use pke loaded models
