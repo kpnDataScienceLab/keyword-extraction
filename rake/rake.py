@@ -43,7 +43,7 @@ def rake(text,
     return keywords[0:n] if len(keywords) >= n else keywords
 
 
-def process_dataset(data_path='../aligned_epg_transcriptions_npo1_npo2.csv',
+def process_dataset(data_path='../transcriptions.csv',
                     max_length=3,
                     stopwords='nltk',
                     punctuation=False):
