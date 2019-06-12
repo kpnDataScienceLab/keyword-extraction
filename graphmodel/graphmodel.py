@@ -132,7 +132,7 @@ def train(dataset,arguments,lang='dutch'):
         # 1. How to load a model from the Nordic Language Processing Laboratory
         model = gensim.models.KeyedVectors.load_word2vec_format(stream, binary=False, unicode_errors='replace')
 
-        nlp = spacy.blank('nl')
+        nlp = spacy.load("nl_core_news_sm")
         keys = []
         for idx in range(len(model.vocab)):
             keys.append(model.index2word[idx])
