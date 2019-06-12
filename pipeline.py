@@ -3,19 +3,30 @@ import pandas as pd
 from datasets.datasets import Dataset
 from eval_metrics import mean_ap, mean_f1, average_precision, f1
 import argparse
+from tqdm import tqdm
 
 
-def train_method(name,train,test,arguments):
-	dataset = Dataset('DUC-2001')
-	train([t[0] for t in dataset.get_texts()],arguments=arguments, lang='english')
+def train_method(name, train, test, arguments, dataset='500N-KPCrowd'):
+    dataset = Dataset(dataset)
+    texts_labels = dataset.get_texts()
+    train([t[0] for t in texts_labels], arguments=arguments, lang='english')
 
-	for (text, targets) in dataset:
-		print(f"Targets: {targets}")
-		predictions = test(text, arguments=arguments, n=len(targets))
-		print(f"Predictions: {predictions}")
-		print(f"F1 score: {f1(predictions, targets)}")
-		print(f"AP score: {average_precision(predictions, targets)}")
-		print()
+    predictions = []
+
+    for (text, targets) in tqdm(dataset, ncols=100):
+        predictions.append(test(text, arguments=arguments, n=len(targets)))
+
+    ap_metrics = mean_ap([t[1] for t in texts_labels], predictions)
+    f1_metrics = mean_f1([t[1] for t in texts_labels], predictions)
+
+    print("AP scores:")
+    for key in ap_metrics:
+        print(f"\t{key}: {ap_metrics[key]}")
+
+    print()
+    print("F1 scores:")
+    for key in f1_metrics:
+        print(f"\t{key}: {f1_metrics[key]}")
 
 
 if __name__ == "__main__":
@@ -25,16 +36,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-       "--tfidf",
-       action="store",
-       help="train tfidf",
-       nargs='*',	
-   )
+        "--tfidf",
+        action="store",
+        help="train tfidf",
+        nargs='*',
+    )
 
     args = parser.parse_args()
-    
+
     if not args.tfidf is None:
-    	methods.append(('tfidf',tfidf.train,tfidf.test,args.tfidf))
+        methods.append(('tfidf', tfidf.train, tfidf.test, args.tfidf))
 
     for m in methods:
-    	train_method(*m)
+        train_method(*m)

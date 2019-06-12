@@ -110,20 +110,20 @@ def bm25(text, n=-1):
 
     # update word counts given any old or new words in text_words
     for w in text_words:
+
+        h, w = text_freq_matrix.shape
+
         if w in _words:
             text_freq_matrix[0, _words.index(w)] += 1
         else:
             _words.append(w)
-            
-    """
-    1: add one row of 0s on top of the matrix
-    for each word in text words:
-        if it appears in words, +1 to that entry in the first row
-        if it doesn't, add it at the end of the words list and append a column of 1,0,0,0,...
-    """
 
+            # add one column to the matrix
+            new_matrix = np.zeros((h, w + 1))
+            new_matrix[:, :, -1] = text_freq_matrix
+            text_freq_matrix = new_matrix
 
-    raise NotImplementedError
+            text_freq_matrix[0, -1] += 1
 
     # global parameters
     l_avg = np.mean(_freq_matrix.sum(axis=1))

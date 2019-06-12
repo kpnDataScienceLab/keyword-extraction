@@ -16,6 +16,9 @@ class Dataset:
         self.ds_folder = self.folder_name + self.ds_name
         self.texts = []
 
+    def __len__(self):
+        return len(self.texts)
+
     def load_labels(self):
 
         labels_path = self.ds_folder + '/references/'
