@@ -3,7 +3,7 @@ import nltk
 import string
 from pke import compute_document_frequency
 # from cleandata import readCleanTranscript
-nltk.download('stopwords')
+# nltk.download('stopwords')
 import json
 
 # Comment out following code before pushing
@@ -55,6 +55,9 @@ singleRank_extractor = pke.unsupervised.SingleRank()
 topicRank_extractor = pke.unsupervised.TopicRank()
 posRank_extractor = pke.unsupervised.PositionRank()
 multiPartiteRank_extractor = pke.unsupervised.MultipartiteRank()
+
+
+
 
 def returnKeywords(topNkeyphrases):
 	output = []
