@@ -19,7 +19,7 @@ def save_keywords(extracted, run_id):
 
 
 def rake(text,
-         n=20,
+         n=-1,
          max_length=3,
          stopwords='nltk',
          punctuation=False):

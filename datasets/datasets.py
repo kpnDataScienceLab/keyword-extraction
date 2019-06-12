@@ -79,6 +79,7 @@ class Dataset:
         text = re.sub(r" 're", "'re", text)
         text = re.sub(r" 'll", "'ll", text)
         text = re.sub(r"'' `` | '' ''", '"', text)
+        text = re.sub(r"`` | ''", '"', text)
         text = re.sub(r" -LRB- ", " (", text)
         text = re.sub(r" -RRB- ", ") ", text)
         text = re.sub(r" -LSB- ", " [", text)
