@@ -75,7 +75,7 @@ def f1(labels, predictions, k=10):
             tp += 1.0
 
     tp_fp = min(len(labels), k) if k else len(labels)
-    tp_fn = len(labels)
+    tp_fn = len(predictions)
 
     if tp == 0.:
         return 0.
