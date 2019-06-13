@@ -1,7 +1,50 @@
 import numpy as np
 
 
-def average_precision(labels, predictions, k=10):
+def levenshtein(s1, s2):
+    """
+    Lehvenstein distance implementation found on
+    https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#Python
+    :param s1: First string
+    :param s2: Second string
+    :return: Levenshtein distance between the two strings
+    """
+    if len(s1) < len(s2):
+        return levenshtein(s2, s1)
+
+    # len(s1) >= len(s2)
+    if len(s2) == 0:
+        return len(s1)
+
+    previous_row = range(len(s2) + 1)
+    for i, c1 in enumerate(s1):
+        current_row = [i + 1]
+        for j, c2 in enumerate(s2):
+            insertions = previous_row[
+                             j + 1] + 1  # j+1 instead of j since previous_row and current_row are one character longer
+            deletions = current_row[j] + 1  # than s2
+            substitutions = previous_row[j] + (c1 != c2)
+            current_row.append(min(insertions, deletions, substitutions))
+        previous_row = current_row
+
+    return previous_row[-1]
+
+
+def is_loosely_in(keyword, k_list):
+    for k in k_list:
+        if levenshtein(keyword, k) <= 1:
+            return True
+    return False
+
+
+def true_positive_check(keyword, labels, predictions, loose):
+    if loose:
+        return is_loosely_in(keyword, labels) and not is_loosely_in(keyword, predictions)
+    else:
+        return p in labels and p not in predictions
+
+
+def average_precision(labels, predictions, k=10, loose=False):
     """
     Returns the average precision score between the two provided lists.
     :param labels: List of ground truth labels, which order doesn't matter.
@@ -25,7 +68,7 @@ def average_precision(labels, predictions, k=10):
 
     for i, p in enumerate(predictions):
         # check for relevance and avoid repetitions
-        if p in labels and p not in predictions[:i]:
+        if true_positive_check(p, labels, predictions[:i], loose):
             tp += 1.0
             score += tp / (i + 1.0)
 
@@ -58,7 +101,7 @@ def mean_ap(labels_list, predictions_list, k=10):
     return results
 
 
-def f1(labels, predictions, k=10):
+def f1(labels, predictions, k=10, loose=False):
     """
     Returns the F1 score between the two provided lists.
     :param labels: List of ground truth labels, which order doesn't matter.
@@ -81,7 +124,7 @@ def f1(labels, predictions, k=10):
 
     for i, p in enumerate(predictions):
         # check for relevance and avoid repetitions
-        if p in labels and p not in predictions[:i]:
+        if true_positive_check(p, labels, predictions[:i], loose):
             tp += 1.0
 
     tp_fp = min(len(labels), k) if k else len(labels)
