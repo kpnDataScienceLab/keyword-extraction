@@ -51,16 +51,17 @@ if __name__ == "__main__":
         nargs='*',
     )
 
-    parser.add_argument(
-        "--tfidf",
-        help="Use tf-idf",
-        nargs='*',
-    )
+    # --------------------------------- all flags and methods below are working
 
-    # TODO: make this work
     parser.add_argument(
         "--bm25",
         help="Use BM25",
+        nargs='*',
+    )
+
+    parser.add_argument(
+        "--tfidf",
+        help="Use tf-idf",
         nargs='*',
     )
 

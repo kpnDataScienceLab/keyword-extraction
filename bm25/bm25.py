@@ -3,9 +3,10 @@ import numpy as np
 from math import log
 from sklearn.feature_extraction.text import CountVectorizer
 
-global _words
 global _freq_matrix
 global _vectorizer
+global _l_avg
+global _n_docs
 
 
 def score_bm25(tf_dt, l_d, l_avg, n_docs, dft):
@@ -38,9 +39,10 @@ def train(dataset, arguments, lang='dutch'):
     :param dataset: List of texts that the model will be trained on
     :param lang: Language to be used for the stopwords
     """
-    global _words
     global _freq_matrix
     global _vectorizer
+    global _l_avg
+    global _n_docs
 
     # get list of dutch stopwords
     stopwords = nltk.corpus.stopwords.words(lang)
@@ -50,11 +52,14 @@ def train(dataset, arguments, lang='dutch'):
                                   strip_accents='unicode',
                                   ngram_range=(1, 3))
     freq_matrix = _vectorizer.fit_transform(dataset)
+    freq_matrix = freq_matrix.toarray()
 
-    # store trained parameters as global variables
-
-    _words = _vectorizer.get_feature_names()
-    _freq_matrix = freq_matrix.toarray()
+    # global parameters
+    _l_avg = np.mean(freq_matrix.sum(axis=1))
+    _n_docs = freq_matrix.shape[0]
+    _freq_matrix = {}
+    for i, word in enumerate(_vectorizer.get_feature_names()):
+        _freq_matrix[word] = np.array(freq_matrix[:, i])
 
 
 def remove_redundancy(keywords):
@@ -69,7 +74,7 @@ def remove_redundancy(keywords):
 
     c_idx = 0
     while c_idx < len(keywords):
-        idx = 0
+        idx = c_idx + 1
         while idx < len(keywords):
             # check that the length of the two keywords differs by only one,
             # and check whether one is a substring of the other
@@ -77,14 +82,13 @@ def remove_redundancy(keywords):
                     and (keywords[c_idx] in keywords[idx] or keywords[idx] in keywords[c_idx]):  # fixme
                 # remove the lower scored keyword
                 del keywords[idx]
-
+                del k_lens[idx]
             idx += 1
         c_idx += 1
 
     return keywords
 
 
-# TODO: this is way too slow
 def test(text, arguments, n=-1, lang='dutch'):
     """
     :param text: Text that the keywords are extracted from
@@ -92,65 +96,44 @@ def test(text, arguments, n=-1, lang='dutch'):
     :param lang: Language for the stopwords
     :return: Top n keywords, ordered from most to least relevant
     """
-    global _words
     global _freq_matrix
     global _vectorizer
+    global _l_avg
+    global _n_docs
 
     # check model has been trained
-    if _words is None or _freq_matrix is None:
+    if _freq_matrix is None:
         print("[WARNING] BM25 hasn't been trained! Returning nothing...")
         return []
 
     # get frequency matrix for the text
     text_freq_matrix = _vectorizer.fit_transform([text])
-    text_words = _vectorizer.get_feature_names()
     text_freq_matrix = text_freq_matrix.toarray()
 
-    # the text is at position 0 in the frequency matrix
-    _freq_matrix = np.vstack((np.zeros((1, len(_words))), _freq_matrix))
+    # length of the current document
+    l_d = sum(text_freq_matrix[0])
 
-    # update word counts given any old or new words in text_words
-    for w in text_words:
+    # make text frequency matrix into a dictionary
+    freq_matrix = {}
+    for i, word in enumerate(_vectorizer.get_feature_names()):
+        freq_matrix[word] = text_freq_matrix[0, i]
 
-        height, width = _freq_matrix.shape
-
-        if w in _words:
-            _freq_matrix[0, _words.index(w)] += text_freq_matrix[0, text_words.index(w)]
-        else:
-            _words.append(w)
-
-            # add one column to the matrix
-            new_matrix = np.zeros((height, width + 1))
-            new_matrix[:, :, -1] = _freq_matrix
-            _freq_matrix = new_matrix
-
-            _freq_matrix[0, -1] += text_freq_matrix[0, text_words.index(w)]
-
-    # global parameters
-    l_avg = np.mean(_freq_matrix.sum(axis=1))
-    n_docs = _freq_matrix.shape[0]
-
-    # document parameters
-    l_d = sum(_freq_matrix[0])
-
-    # indices of the possible document keywords
-    keyword_idxs = np.nonzero(_freq_matrix[0])[0].tolist()
+    n_docs = _n_docs + 1
 
     # compute bm25 scores
     scores = []
-    for idx in keyword_idxs:
+    for word in freq_matrix:
         # term level
-        tf_dt = _freq_matrix[0, idx]
-        dft = np.count_nonzero(_freq_matrix[:, idx])
-        s = score_bm25(tf_dt, l_d, l_avg, n_docs, dft)
-        scores.append((_words[idx], s))
+        tf_dt = freq_matrix[word]
+        dft = np.count_nonzero(_freq_matrix.get(word, np.array([0.])))
+        s = score_bm25(tf_dt, l_d, _l_avg, n_docs, dft)
+        scores.append((word, s))
 
     # reorder and extract keywords
     scores = sorted(scores, key=lambda x: x[1], reverse=True)
     keywords = [pair[0] for pair in scores]
 
     # filter keywords by removing redundancy
-    # TODO: fix the remove_redundancy function
     # keywords = remove_redundancy(keywords)
 
     return keywords[0:n] if len(keywords) >= n else keywords
