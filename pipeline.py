@@ -37,7 +37,7 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001'):
     train(dataset.texts, arguments=arguments, lang='english')
 
     predictions = []
-    for text in tqdm(dataset.texts, ncols=100):
+    for text in tqdm(dataset.texts, ncols=80):
         predictions.append(test(text, arguments=arguments, n=k, lang='english'))
 
     ap_metrics = mean_ap(dataset.labels, predictions, k=k)
@@ -45,12 +45,12 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001'):
 
     print(f"AP scores {name}:")
     for key in ap_metrics:
-        print(f"{key}:".rjust(12) + f"{ap_metrics[key]:.3f}".rjust(7))
+        print(f"{key}:".rjust(15) + f"{ap_metrics[key]:.3f}".rjust(7))
 
     print()
     print(f"F1 scores {name}:")
     for key in f1_metrics:
-        print(f"{key}:".rjust(12) + f"{f1_metrics[key]:.3f}".rjust(7))
+        print(f"{key}:".rjust(15) + f"{f1_metrics[key]:.3f}".rjust(7))
 
     save_results(name, dataset_name, ap_metrics, f1_metrics)
 
