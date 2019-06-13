@@ -89,7 +89,7 @@ def remove_redundancy(keywords):
     return keywords
 
 
-def test(text, arguments, n=-1, lang='dutch'):
+def test(text, arguments, k=-1, lang='dutch'):
     """
     :param text: Text that the keywords are extracted from
     :param n: Number of keywords to return. Use -1 to return all of them

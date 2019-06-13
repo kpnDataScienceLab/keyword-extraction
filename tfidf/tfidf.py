@@ -19,7 +19,7 @@ def train(dataset, arguments, lang='dutch'):
     _model.fit_transform(dataset)
 
 
-def test(text, arguments, n=5, lang='dutch'):
+def test(text, arguments, k=5, lang='dutch'):
     response = _model.transform([text])
     feature_names = _model.get_feature_names()
-    return get_top_n_tfidf(response, feature_names, n)
+    return get_top_n_tfidf(response, feature_names, k)
