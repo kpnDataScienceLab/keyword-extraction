@@ -9,6 +9,11 @@ def average_precision(labels, predictions, k=10):
     :param k: The cutoff value for computing the average precision. If k==0, all items are used.
     :return: The average precision score for the current list.
     """
+
+    # make all keywords lowercase
+    labels = [l.lower() for l in labels]
+    predictions = [p.lower() for p in predictions]
+
     if not labels or not predictions:
         return 0.0
 
@@ -61,6 +66,11 @@ def f1(labels, predictions, k=10):
     :param k: The cutoff value for computing the average precision. If k==0, all items are used.
     :return: The F1 score for the current list.
     """
+
+    # make all keywords lowercase
+    labels = [l.lower() for l in labels]
+    predictions = [p.lower() for p in predictions]
+
     if not labels or not predictions:
         return 0.0
 
