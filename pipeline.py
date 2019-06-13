@@ -38,10 +38,9 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001'):
     train(dataset.texts, arguments=arguments, lang='english')
 
     predictions = []
-
     for text in tqdm(dataset.texts, ncols=80):
-        predictions.append(test(text, arguments=arguments, n=k, lang='english'))
-
+        predictions.append(test(text, arguments=arguments, k=k, lang='english'))
+        
     ap_metrics = mean_ap(dataset.labels, predictions, k=k)
     f1_metrics = mean_f1(dataset.labels, predictions, k=k)
 
