@@ -17,7 +17,7 @@ class GraphWord2Vec:
   
     def set_stopwords(self, stopwords):  
         """Set stop words"""
-        for word in self.stopwords.:
+        for word in self.stopwords:
             lexeme = self.nlp.vocab[word]
             lexeme.is_stop = True  
     
@@ -90,11 +90,12 @@ class GraphWord2Vec:
         
         # Parse text by spaCy
         doc = self.nlp(text)
+        print(doc)
         # Filter sentences
         sentences = self.sentence_segment(doc, candidate_pos, lower) # list of list of words
         # Build vocabulary
         vocab = self.get_vocab(sentences)
-        
+        print(vocab)
         # Get normalized matrix
         g = self.get_matrix(vocab)
         
@@ -125,6 +126,7 @@ global _model
 def train(dataset,arguments,lang='dutch'):
     global _model
     if lang=='dutch':
+        from spacy.lang.nl.stop_words import STOP_WORDS
         model_data_path = "../39.zip"
         with zipfile.ZipFile(model_data_path, "r") as archive:
             stream = archive.open("model.txt")
@@ -137,15 +139,15 @@ def train(dataset,arguments,lang='dutch'):
         for idx in range(len(model.vocab)):
             keys.append(model.index2word[idx])
         nlp.vocab.vectors = spacy.vocab.Vectors(data=model.syn0, keys=keys)
-        from spacy.lang.nl.stop_words import STOP_WORDS
 
     if lang == 'english':
-        nlp = spacy.load("en_core_web_sm")
+        nlp = spacy.load("en_core_web_lg")
         from spacy.lang.en.stop_words import STOP_WORDS
+        nlp.add_pipe(nlp.create_pipe('sentencizer'))
 
-    _model = GraphWord2Vec(nlp,STOP_WORDS,arguments[1])
+    _model = GraphWord2Vec(nlp,STOP_WORDS,*arguments)
 
-def test(text, arguments, k=5):
+def test(text, arguments, k=5, lang=5):
     global _model
-    _model.analyze(t, candidate_pos = ['NOUN', 'PROPN'], lower=True)
+    _model.analyze(text, candidate_pos = ['NOUN', 'PROPN'], lower=True)
     return _model.get_keywords(5)

@@ -7,6 +7,7 @@ from eval_metrics import mean_ap, mean_f1
 import argparse
 import csv
 from tqdm import tqdm
+from graphmodel import graphmodel
 import os
 
 
@@ -37,6 +38,7 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001'):
     train(dataset.texts, arguments=arguments, lang='english')
 
     predictions = []
+
     for text in tqdm(dataset.texts, ncols=80):
         predictions.append(test(text, arguments=arguments, n=k, lang='english'))
 
@@ -85,7 +87,11 @@ if __name__ == "__main__":
         help="Use RAKE",
         nargs='*',
     )
-
+    parser.add_argument(
+        "--graphmodel",
+        help="Use GRAPHMODEL",
+        nargs='*',
+    )
     parser.add_argument(
         "--k",
         type=int,
@@ -135,6 +141,14 @@ if __name__ == "__main__":
                         'train': pke_yake.train,
                         'test': pke_yake.test,
                         'arguments': args.yake,
+                        'k': args.k,
+                        'dataset_name': args.dataset}
+                       )
+    if args.graphmodel is not None:
+        methods.append({'name': 'graphmodel',
+                        'train': graphmodel.train,
+                        'test': graphmodel.test,
+                        'arguments': args.graphmodel,
                         'k': args.k,
                         'dataset_name': args.dataset}
                        )
