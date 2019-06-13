@@ -7,6 +7,23 @@ from eval_metrics import mean_ap, mean_f1
 import argparse
 import csv
 from tqdm import tqdm
+import os
+
+
+def save_results(name, dataset_name, ap_metrics, f1_metrics):
+    """
+    Save results or append them to an existing csv file
+    """
+    # if file doesn't exist, initialize it with the right columns
+    if not os.path.isfile(f'evaluations/evaluations_{dataset_name}.csv'):
+        with open(f'evaluations/evaluations_{dataset_name}.csv', mode='w') as csv_file:
+            csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            csv_writer.writerow(["Method"] + list(ap_metrics.keys()) + list(f1_metrics.keys()))
+            csv_writer.writerow([name] + list(ap_metrics.values()) + list(f1_metrics.values()))
+    else:
+        with open(f'evaluations/evaluations_{dataset_name}.csv', mode='a') as csv_file:
+            csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            csv_writer.writerow([name] + list(ap_metrics.values()) + list(f1_metrics.values()))
 
 
 def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001'):
@@ -35,9 +52,7 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001'):
     for key in f1_metrics:
         print(f"{key}:".rjust(12) + f"{f1_metrics[key]:.3f}".rjust(7))
 
-    with open(f'evaluations/evaluations_{name}_{dataset_name}.csv', mode='w+') as csv_file:
-        csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        csv_writer.writerow([name] + list(ap_metrics.values()))
+    save_results(name, dataset_name, ap_metrics, f1_metrics)
 
 
 if __name__ == "__main__":
