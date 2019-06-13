@@ -1,16 +1,5 @@
 # Rake
 
-### Requirements
-
-To install the required packages use:
-```
-$ pip install -r requirements.txt
-```
-If needed, install the nltk stopwords dataset:
-```
-$ python -c "import nltk; nltk.download('stopwords')"
-```
-
 ### Usage
 
 To run the rake keyword extractor, navigate to the root

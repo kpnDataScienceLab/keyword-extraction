@@ -5,6 +5,9 @@ from spacy.lang.nl.stop_words import STOP_WORDS
 import pandas as pd
 import zipfile 
 import gensim
+import warnings
+warnings.filterwarnings("ignore")
+
 
 class GraphWord2Vec:
     def __init__(self,nlp,stopwords,d=0.85):
@@ -75,11 +78,12 @@ class GraphWord2Vec:
     def get_keywords(self, number=10):
         """Print top number keywords"""
         node_weight = OrderedDict(sorted(self.node_weight.items(), key=lambda t: t[1], reverse=True))
-        
-        for i, (key, value) in enumerate(node_weight.items()):
-            print(str(key) + ' - ' + str(value))
-            if i > number:
-                break
+        return list(node_weight.keys())[:number]
+
+        # for i, (key, value) in enumerate(node_weight.items()):
+        #     print(str(key) + ' - ' + str(value))
+        #     if i > number:
+        #         break
     
     def analyze(self, text, 
                 candidate_pos=['NOUN', 'PROPN'], lower=False, stopwords=list()):
@@ -90,12 +94,13 @@ class GraphWord2Vec:
         
         # Parse text by spaCy
         doc = self.nlp(text)
-        print(doc)
+        
         # Filter sentences
         sentences = self.sentence_segment(doc, candidate_pos, lower) # list of list of words
+        
         # Build vocabulary
         vocab = self.get_vocab(sentences)
-        print(vocab)
+
         # Get normalized matrix
         g = self.get_matrix(vocab)
         
@@ -109,7 +114,7 @@ class GraphWord2Vec:
             pr = (1-self.d) + self.d * np.dot(g, pr)
             diff = sum(abs(previous_pr - pr))
 
-            print(f"step: {step}, diff:{diff}")
+            # print(f"step: {step}, diff:{diff}")
             if diff  < self.min_diff:
                 break
             else:
@@ -143,11 +148,10 @@ def train(dataset,arguments,lang='dutch'):
     if lang == 'english':
         nlp = spacy.load("en_core_web_lg")
         from spacy.lang.en.stop_words import STOP_WORDS
-        nlp.add_pipe(nlp.create_pipe('sentencizer'))
 
     _model = GraphWord2Vec(nlp,STOP_WORDS,*arguments)
 
 def test(text, arguments, k=5, lang=5):
     global _model
     _model.analyze(text, candidate_pos = ['NOUN', 'PROPN'], lower=True)
-    return _model.get_keywords(5)
+    return _model.get_keywords(k)

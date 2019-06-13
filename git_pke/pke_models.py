@@ -37,12 +37,12 @@ from git_pke.pke_models import pke_yake, pke_textRank, pke_singleRank, \
 	pke_topicRank, pke_positionRank, pke_multipartieRank
 
 ## Functions are called as, 
-topN = pke_yake(text, n = 5, language = 'nl') # or 'en'
-topN = pke_textRank(text, n = 5, language = 'nl')
-topN = pke_singleRank(text, n = 5, language = 'nl')
-topN = pke_topicRank(text, n = 5, language = 'dutch') # or 'english'
-topN = pke_positionRank(text, n = 5, language = 'nl')
-topN = pke_multipartieRank(text, n = 5, language = 'dutch')
+topN = pke_yake(text, k = 5, language = 'nl') # or 'en'
+topN = pke_textRank(text, k = 5, language = 'nl')
+topN = pke_singleRank(text, k = 5, language = 'nl')
+topN = pke_topicRank(text, k = 5, language = 'dutch') # or 'english'
+topN = pke_positionRank(text, k = 5, language = 'nl')
+topN = pke_multipartieRank(text, k = 5, language = 'dutch')
 
 """
 
@@ -68,7 +68,7 @@ def returnKeywords(topNkeyphrases):
 # Priority models:
 
 # YAKE [tested]
-def pke_yake(text, n = 5, language = 'nl'):
+def pke_yake(text, k = 5, language = 'nl'):
 
 	yake_extractor.load_document(text, language = language)
 	yake_extractor.candidate_selection()
@@ -78,7 +78,7 @@ def pke_yake(text, n = 5, language = 'nl'):
 	return returnKeywords(keyphrases)
 
 # TextRank [tested]
-def pke_textRank(text, n = 5, language = 'nl'):
+def pke_textRank(text, k = 5, language = 'nl'):
 	
 	POS = {'NOUN', 'PROPN', 'ADJ'}
 	textRank_extractor.load_document(text, 
@@ -91,7 +91,7 @@ def pke_textRank(text, n = 5, language = 'nl'):
 	return returnKeywords(keyphrases)
 
 # SingleRank [tested]
-def pke_singleRank(text, n = 5, language = 'nl'):
+def pke_singleRank(text, k = 5, language = 'nl'):
 	POS = {'NOUN', 'PROPN', 'ADJ'}
 
 	singleRank_extractor.load_document(input = text,
@@ -104,7 +104,7 @@ def pke_singleRank(text, n = 5, language = 'nl'):
 	return returnKeywords(keyphrases)
 
 # TopicRank, takes default language as 'dutch' instead of 'nl' [tested]
-def pke_topicRank(text, n = 5, language = 'dutch'):
+def pke_topicRank(text, k = 5, language = 'dutch'):
 	
 	POS = {'NOUN', 'PROPN', 'ADJ'}
 	# Special characters
@@ -121,7 +121,7 @@ def pke_topicRank(text, n = 5, language = 'dutch'):
 	return returnKeywords(keyphrases)
 
 # PositionRank
-def pke_positionRank(text, n = 5, language = 'nl'):
+def pke_positionRank(text, k = 5, language = 'nl'):
 	
 	POS = {'NOUN', 'PROPN', 'ADJ'}
 	grammar = "NP: {<ADJ>*<NOUN|PROPN>+}"
@@ -137,7 +137,7 @@ def pke_positionRank(text, n = 5, language = 'nl'):
 	return returnKeywords(keyphrases)
 
 # MultipartiteRank
-def pke_multipartieRank(text, n = 5, language = 'dutch'):
+def pke_multipartieRank(text, k = 5, language = 'dutch'):
 	
 	POS = {'NOUN', 'PROPN', 'ADJ'}
 	multiPartiteRank_extractor.load_document(input = text)
@@ -156,17 +156,17 @@ def pke_multipartieRank(text, n = 5, language = 'dutch'):
 
 
 # WINGNUS
-def pke_wingnus(text, n = 5, language = 'nl'):
+def pke_wingnus(text, k = 5, language = 'nl'):
 	pass
 
 # Low priority models
 
 # TfIdf
-def pke_tfidf(text, n = 5, language = 'nl'):
+def pke_tfidf(text, k = 5, language = 'nl'):
 	pass
 
 # KPMiner
-def pke_kpminer(text, n = 5, language = 'nl'):
+def pke_kpminer(text, k = 5, language = 'nl'):
 	pass
 
 
@@ -202,17 +202,17 @@ if __name__ == '__main__':
 
 	print("\n\nPredictions: ")
 	print("Running yake:")
-	print(pke_yake(path, n = 10, language = language1))
+	print(pke_yake(path, k = 10, language = language1))
 	print("Running textRank:")
-	print(pke_textRank(path, n = 10, language = language1))
+	print(pke_textRank(path, k = 10, language = language1))
 	print("Running singleRank:")
-	print(pke_singleRank(path, n = 10, language = language1))
+	print(pke_singleRank(path, k = 10, language = language1))
 	print("Running topicRank:")
-	print(pke_topicRank(path, n = 10, language = language2))
+	print(pke_topicRank(path, k = 10, language = language2))
 	print("Running positionRank:")
-	print(pke_positionRank(path, n = 10, language = language1))
+	print(pke_positionRank(path, k = 10, language = language1))
 	print("Running MultipartiteRank:")
-	print(pke_multipartieRank(path, n = 10, language = language2))
+	print(pke_multipartieRank(path, k = 10, language = language2))
 
 	print("\n\nLabels: ", labels)
 
