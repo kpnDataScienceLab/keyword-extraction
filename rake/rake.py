@@ -45,6 +45,7 @@ def test(text,
     return keywords[0:n] if len(keywords) >= n else keywords
 
 
+# currently useless
 def process_dataset(data_path='../transcriptions.csv',
                     max_length=3,
                     stopwords='nltk',
