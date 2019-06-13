@@ -152,5 +152,9 @@ if __name__ == "__main__":
                         'dataset_name': args.dataset}
                        )
 
-    for m in methods:
-        run_pipeline(**m)
+    try:
+        for m in methods:
+            run_pipeline(**m)
+    except KeyboardInterrupt:
+        print("Terminating...")
+        quit()
