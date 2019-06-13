@@ -40,11 +40,17 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001'):
     predictions = []
     for text in tqdm(dataset.texts, ncols=80):
         predictions.append(test(text, arguments=arguments, k=k, lang='english'))
+<<<<<<< HEAD
         # print(f'predictions: {predictions[-1]}')
         # print(f'targets: {dataset.labels[len(predictions)-1]}')
     print(f'calculating scores {name}...') 
     ap_metrics = mean_ap(dataset.labels, predictions, k=k)
     f1_metrics = mean_f1(dataset.labels, predictions, k=k)
+=======
+
+    ap_metrics = mean_ap(dataset.labels, predictions, k=k, loose=True)
+    f1_metrics = mean_f1(dataset.labels, predictions, k=k, loose=True)
+>>>>>>> b61ce238cfa15b1d39a0b5c4d67a67eb16644b6d
 
     print(f"AP scores {name}:")
     for key in ap_metrics:
@@ -64,12 +70,42 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
+        "--mprank",
+        help = "Use MultiPartiteRank",
+        nargs = "*"
+    )
+
+    # --------------------------------- all flags and methods below are working
+
+    parser.add_argument(
+        "--positionrank",
+        help = "Use PositionRank",
+        nargs = "*"
+    )
+
+    parser.add_argument(
+        "--singlerank",
+        help = "Use SingleRank",
+        nargs = "*"
+    )
+
+    parser.add_argument(
+        "--textrank",
+        help = "Use TextRank",
+        nargs = "*",
+    )
+
+    parser.add_argument(
+        "--topicrank",
+        help = "Use TopicRank",
+        nargs = '*',
+    )
+
+    parser.add_argument(
         "--yake",
         help="Use YAKE",
         nargs='*',
     )
-
-    # --------------------------------- all flags and methods below are working
 
     parser.add_argument(
         "--bm25",
@@ -110,6 +146,42 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    if args.mprank is not None:
+        methods.append({'name': 'MultiPartiteRank',
+                        'train': pke_multipartiterank.train,
+                        'test': pke_multipartiterank.test,
+                        'arguments': args.mprank,
+                        'k': args.k,
+                        'dataset_name': args.dataset}
+                       )
+
+    if args.positionrank is not None:
+        methods.append({'name': 'PositionRank',
+                        'train': pke_positionrank.train,
+                        'test': pke_positionrank.test,
+                        'arguments': args.positionrank,
+                        'k': args.k,
+                        'dataset_name': args.dataset}
+                       )
+
+    if args.singlerank is not None:
+        methods.append({'name': 'SingleRank',
+                        'train': pke_singlerank.train,
+                        'test': pke_singlerank.test,
+                        'arguments': args.singlerank,
+                        'k': args.k,
+                        'dataset_name': args.dataset}
+                       )
+
+    if args.textrank is not None:
+        methods.append({'name': 'TextRank',
+                        'train': pke_textrank.train,
+                        'test': pke_textrank.test,
+                        'arguments': args.textrank,
+                        'k': args.k,
+                        'dataset_name': args.dataset}
+                       )
+
     if args.tfidf is not None:
         methods.append({'name': 'tfidf',
                         'train': tfidf.train,
@@ -145,6 +217,7 @@ if __name__ == "__main__":
                         'k': args.k,
                         'dataset_name': args.dataset}
                        )
+
     if args.graphmodel is not None:
         methods.append({'name': 'graphmodel',
                         'train': graphmodel.train,
@@ -154,5 +227,18 @@ if __name__ == "__main__":
                         'dataset_name': args.dataset}
                        )
 
-    for m in methods:
-        run_pipeline(**m)
+    if args.topicrank is not None:
+        methods.append({'name': 'TopicRank',
+                        'train': pke_topicrank.train,
+                        'test': pke_topicrank.test,
+                        'arguments': args.topicrank,
+                        'k': args.k,
+                        'dataset_name': args.dataset}
+                       )        
+
+    try:
+        for m in methods:
+            run_pipeline(**m)
+    except KeyboardInterrupt:
+        print("Terminating...")
+        quit()

@@ -33,8 +33,8 @@ def pke_multipartiteRank(text, n = 5, language = 'dutch'):
 def train(dataset,arguments,lang='dutch'):
 	pass
 
-def test(text, arguments, n=5, lang = 'dutch'):
+def test(text, arguments, k=5, lang = 'dutch'):
 	if(lang == 'dutch'):
-		return pke_multipartiteRank(text, n = n, language = 'dutch')
+		return pke_multipartiteRank(text, n = k, language = 'dutch')
 	else:
-		return pke_multipartiteRank(text, n = n, language = 'english')
+		return pke_multipartiteRank(text, n = k, language = 'english')
