@@ -41,7 +41,7 @@ def true_positive_check(keyword, labels, predictions, loose):
     if loose:
         return is_loosely_in(keyword, labels) and not is_loosely_in(keyword, predictions)
     else:
-        return p in labels and p not in predictions
+        return keyword in labels and keyword not in predictions
 
 
 def average_precision(labels, predictions, k=10, loose=False):
@@ -79,7 +79,7 @@ def average_precision(labels, predictions, k=10, loose=False):
     return score / tp_fp
 
 
-def mean_ap(labels_list, predictions_list, k=10):
+def mean_ap(labels_list, predictions_list, k=10, loose=False):
     """
     Returns the mean average precision for a series of ranking attempts.
     :param labels_list: A list of lists, where each list contains the ground truth keywords for a text.
@@ -90,7 +90,7 @@ def mean_ap(labels_list, predictions_list, k=10):
     ap_scores = []
 
     for labels, predictions in zip(labels_list, predictions_list):
-        ap_scores.append(average_precision(labels, predictions, k))
+        ap_scores.append(average_precision(labels, predictions, k, loose))
 
     results = {'ap_mean': np.mean(ap_scores),
                'ap_std': np.std(ap_scores),
@@ -139,7 +139,7 @@ def f1(labels, predictions, k=10, loose=False):
     return (2 * precision * recall) / (precision + recall)
 
 
-def mean_f1(labels_list, predictions_list, k=10):
+def mean_f1(labels_list, predictions_list, k=10, loose=False):
     """
     Returns the mean F1 score for a series of ranking attempts.
     :param labels_list: A list of lists, where each list contains the ground truth keywords for a text.
@@ -150,7 +150,7 @@ def mean_f1(labels_list, predictions_list, k=10):
     f1_scores = []
 
     for labels, predictions in zip(labels_list, predictions_list):
-        f1_scores.append(f1(labels, predictions, k))
+        f1_scores.append(f1(labels, predictions, k, loose))
 
     results = {'f1_mean': np.mean(f1_scores),
                'f1_std': np.std(f1_scores),

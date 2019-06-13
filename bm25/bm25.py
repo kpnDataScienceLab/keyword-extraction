@@ -136,4 +136,4 @@ def test(text, arguments, k=-1, lang='dutch'):
     # filter keywords by removing redundancy
     # keywords = remove_redundancy(keywords)
 
-    return keywords[0:n] if len(keywords) >= n else keywords
+    return keywords[0:k] if len(keywords) >= k else keywords
