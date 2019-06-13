@@ -44,11 +44,11 @@ def mean_ap(labels_list, predictions_list, k=10):
     for labels, predictions in zip(labels_list, predictions_list):
         ap_scores.append(average_precision(labels, predictions, k))
 
-    results = {'mean': np.mean(ap_scores),
-               'std': np.std(ap_scores),
-               'min': np.min(ap_scores),
-               'max': np.max(ap_scores),
-               'median': np.median(ap_scores)}
+    results = {'ap_mean': np.mean(ap_scores),
+               'ap_std': np.std(ap_scores),
+               'ap_min': np.min(ap_scores),
+               'ap_max': np.max(ap_scores),
+               'ap_median': np.median(ap_scores)}
 
     return results
 
@@ -99,10 +99,10 @@ def mean_f1(labels_list, predictions_list, k=10):
     for labels, predictions in zip(labels_list, predictions_list):
         f1_scores.append(f1(labels, predictions, k))
 
-    results = {'mean': np.mean(f1_scores),
-               'std': np.std(f1_scores),
-               'min': np.min(f1_scores),
-               'max': np.max(f1_scores),
-               'median': np.median(f1_scores)}
+    results = {'f1_mean': np.mean(f1_scores),
+               'f1_std': np.std(f1_scores),
+               'f1_min': np.min(f1_scores),
+               'f1_max': np.max(f1_scores),
+               'f1_median': np.median(f1_scores)}
 
     return results
