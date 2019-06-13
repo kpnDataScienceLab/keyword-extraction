@@ -33,8 +33,9 @@ def pke_topicRank(text, n = 5, language = 'dutch'):
 def train(dataset,arguments,lang='dutch'):
 	pass
 
-def test(text, arguments, n=5, lang = 'dutch'):
+def test(text, arguments, k=5, lang = 'dutch'):
+	print(arguments)
 	if(lang == 'dutch'):
-		return pke_topicRank(text, n = n, language = 'dutch')
+		return pke_topicRank(text, n = k, language = 'dutch')
 	else:
-		return pke_topicRank(text, n = n, language = 'english')
+		return pke_topicRank(text, n = k, language = 'english')
