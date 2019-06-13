@@ -16,8 +16,20 @@ def returnKeywords(topNkeyphrases):
 
 def pke_yake(text, n = 5, language = 'nl'):
 
+	# Used to test yake using candidates:
+	# POS = {'NOUN', 'PROPN', 'ADJ'}
+	# stoplist = list(string.punctuation)
+	# stoplist += ['-lrb-', '-rrb', '-lcb-', '-rcb-', '-lsb-', '-rsb-']
+	# stoplist += ['-RCB-', '-LCB-']
+	# if language == 'nl':
+	# 	stoplist += nltk.corpus.stopwords.words('dutch')
+	# else:
+	# 	stoplist += nltk.corpus.stopwords.words('english')
+	# -------------------------------	
+
 	yake_extractor = pke.unsupervised.YAKE()
 	yake_extractor.load_document(text, language = language)
+	# yake_extractor.candidate_selection(pos = POS, stoplist = stoplist)
 	yake_extractor.candidate_selection()
 	yake_extractor.candidate_weighting()
 

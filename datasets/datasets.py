@@ -85,8 +85,21 @@ class Dataset:
         text = re.sub(r"`` | ''", '"', text)
         text = re.sub(r" -LRB- ", " (", text)
         text = re.sub(r" -RRB- ", ") ", text)
+        text = re.sub(r" -RRB-", ") ", text)  
         text = re.sub(r" -LSB- ", " [", text)
         text = re.sub(r" -RSB- ", "] ", text)
+
+        # Tags without spaces:
+        text = re.sub(r"-LRB-", " (", text)
+        text = re.sub(r"-RRB-", ") ", text)
+        text = re.sub(r"-RRB-", ") ", text)  
+        text = re.sub(r"-LSB-", " [", text)
+        text = re.sub(r"-RSB-", "] ", text)  
+
+        # Unkown tags: 
+        text = re.sub(r"-RCB-", "", text)
+        text = re.sub(r"-LCB-", "", text)
+
         return text
 
     @staticmethod
