@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.CRITICAL)
 global time_id
 
 
-def save_results(name, dataset_name, ap_metrics, f1_metrics, match_type):
+def save_results(name, dataset_name, ap_metrics, f1_metrics, k, match_type):
     """
     Save results or append them to an existing csv file
     """
@@ -28,14 +28,14 @@ def save_results(name, dataset_name, ap_metrics, f1_metrics, match_type):
         with open(f'evaluations/evaluations_{dataset_name}.csv', mode='w') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             csv_writer.writerow(
-                ["method"] + list(ap_metrics.keys()) + list(f1_metrics.keys()) + ['matching_type', 'time'])
+                ["method"] + list(ap_metrics.keys()) + list(f1_metrics.keys()) + ['k', 'matching_type', 'time'])
             csv_writer.writerow(
-                [name.lower()] + list(ap_metrics.values()) + list(f1_metrics.values()) + [match_type, time_id])
+                [name.lower()] + list(ap_metrics.values()) + list(f1_metrics.values()) + [k, match_type, time_id])
     else:
         with open(f'evaluations/evaluations_{dataset_name}.csv', mode='a') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             csv_writer.writerow(
-                [name.lower()] + list(ap_metrics.values()) + list(f1_metrics.values()) + [match_type, time_id])
+                [name.lower()] + list(ap_metrics.values()) + list(f1_metrics.values()) + [k, match_type, time_id])
 
 
 def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', match_type='strict'):
@@ -67,7 +67,7 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', ma
     for key in results['f1']:
         print(f"{key}:".rjust(15) + f"{results['f1'][key]:.3f}".rjust(7))
 
-    save_results(name, dataset_name, results['ap'], results['f1'], match_type)
+    save_results(name, dataset_name, results['ap'], results['f1'], k, match_type)
 
 
 if __name__ == "__main__":
