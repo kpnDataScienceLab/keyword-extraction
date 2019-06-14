@@ -1,6 +1,7 @@
 import numpy as np
 from graphmodel.graphmodel import train as graph_model_config
-from graphmodel.graphmodel import _model
+from graphmodel.graphmodel import get_model
+from tqdm import tqdm
 
 
 def spacy_check(keyword, k_list, threshold=0.85):
@@ -10,7 +11,7 @@ def spacy_check(keyword, k_list, threshold=0.85):
     """
     graph_model_config('', '', 'english')
     for k in k_list:
-        similarity = _model.nlp(keyword).similarity(_model.nlp(k))
+        similarity = get_model().nlp(keyword).similarity(get_model().nlp(k))
         if similarity > threshold:
             # print(f'match-> {keyword} : {l} @ {sim}')
             return True
@@ -211,7 +212,11 @@ def get_results(labels_list, predictions_list, k=10, match_type='strict'):
     ap_scores = []
     f1_scores = []
 
-    for labels, predictions in zip(labels_list, predictions_list):
+    # tqdm parameters
+    total = len(predictions_list)
+    no_tqdm = (match_type != 'spacy')
+
+    for labels, predictions in tqdm(zip(labels_list, predictions_list), ncols=80, total=total, disable=no_tqdm):
         ap_score, f1_score = f1_ap(labels, predictions, k, match_type)
         ap_scores.append(ap_score)
         f1_scores.append(f1_score)
