@@ -3,12 +3,16 @@ from bm25 import bm25
 from rake import rake
 from git_pke import pke_multipartiterank, pke_positionrank, pke_singlerank, pke_textrank, pke_topicrank, pke_yake
 from datasets.datasets import Dataset
-from eval_metrics import mean_ap, mean_f1
+from eval_metrics import get_results
 import argparse
 import csv
 from tqdm import tqdm
 from graphmodel import graphmodel
 import os
+
+# skips useless warnings in the pke methods
+import logging
+logging.basicConfig(level=logging.CRITICAL)
 
 
 def save_results(name, dataset_name, ap_metrics, f1_metrics):
@@ -29,32 +33,33 @@ def save_results(name, dataset_name, ap_metrics, f1_metrics):
 
 def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', match_type='strict'):
     print()
-    print(f'Evaluating {name}...')
+    print(f'Evaluating {name}')
 
     # loading the dataset
     dataset = Dataset(dataset_name)
 
     # train whichever method we're using
+    print('Training the model...')
     train(dataset.texts, arguments=arguments, lang='english')
 
+    print('Running predictions...')
     predictions = []
     for text in tqdm(dataset.texts, ncols=80):
         predictions.append(test(text, arguments=arguments, k=k, lang='english'))
 
-    print(f'calculating scores {name}...')
-    ap_metrics = mean_ap(dataset.labels, predictions, k=k, match_type=match_type)
-    f1_metrics = mean_f1(dataset.labels, predictions, k=k, match_type=match_type)
+    print(f'Calculating scores...')
+    results = get_results(dataset.labels, predictions, k=k, match_type=match_type)
 
     print(f"AP scores {name}:")
-    for key in ap_metrics:
-        print(f"{key}:".rjust(15) + f"{ap_metrics[key]:.3f}".rjust(7))
+    for key in results['ap']:
+        print(f"{key}:".rjust(15) + f"{results['ap'][key]:.3f}".rjust(7))
 
     print()
     print(f"F1 scores {name}:")
-    for key in f1_metrics:
-        print(f"{key}:".rjust(15) + f"{f1_metrics[key]:.3f}".rjust(7))
+    for key in results['f1']:
+        print(f"{key}:".rjust(15) + f"{results['f1'][key]:.3f}".rjust(7))
 
-    save_results(name, dataset_name, ap_metrics, f1_metrics)
+    save_results(name, dataset_name, results['ap'], results['f1'])
 
 
 if __name__ == "__main__":
@@ -257,5 +262,5 @@ if __name__ == "__main__":
         for m in methods:
             run_pipeline(**m)
     except KeyboardInterrupt:
-        print("Terminating...")
+        print("\nTerminating...")
         quit()
