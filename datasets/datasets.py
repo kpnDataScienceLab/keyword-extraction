@@ -9,11 +9,13 @@ class Dataset:
 
     def __init__(self, ds_name='500N-KPCrowd'):
         # make sure the dataset is supported (mainly because of the label loading)
-        assert ds_name in ['500N-KPCrowd', 'DUC-2001', 'Inspec']
+        assert ds_name in ['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD']
 
         self.ds_name = ds_name
         self.folder_name = os.path.dirname(os.path.realpath(__file__)) + '/ake-datasets/datasets/'
         self.ds_folder = self.folder_name + self.ds_name
+        self.texts = []
+        self.labels = []
         self.build_dataset()
 
     def __len__(self):
@@ -30,6 +32,13 @@ class Dataset:
             label_files = ['test.reader.json']
         if self.ds_name == 'Inspec':
             label_files = ['dev.contr.json', 'test.contr.json', 'train.contr.json']
+        if self.ds_name == 'SemEval-2010':
+            print("[WARNING] SemEval-2010's labels are stemmed!")
+            label_files = ['test.combined.stem.json', 'train.combined.stem.json']
+        if self.ds_name in ['NUS', 'WWW']:
+            label_files = ['test.combined.json']
+        if self.ds_name == 'KDD':
+            label_files = ['test.author.json']
 
         for lfile in label_files:
             # load unstemmed labels
@@ -45,8 +54,6 @@ class Dataset:
         with a text for each file
         :return: Two lists containing all texts and labels
         """
-        self.texts = []
-        self.labels = []
 
         # load labels in order to return them matched with the texts
         labels_dict = self.load_labels()
@@ -85,16 +92,16 @@ class Dataset:
         text = re.sub(r"`` | ''", '"', text)
         text = re.sub(r" -LRB- ", " (", text)
         text = re.sub(r" -RRB- ", ") ", text)
-        text = re.sub(r" -RRB-", ") ", text)  
+        text = re.sub(r" -RRB- ", ") ", text)
         text = re.sub(r" -LSB- ", " [", text)
         text = re.sub(r" -RSB- ", "] ", text)
 
         # Tags without spaces:
         text = re.sub(r"-LRB-", " (", text)
         text = re.sub(r"-RRB-", ") ", text)
-        text = re.sub(r"-RRB-", ") ", text)  
+        text = re.sub(r"-RRB-", ") ", text)
         text = re.sub(r"-LSB-", " [", text)
-        text = re.sub(r"-RSB-", "] ", text)  
+        text = re.sub(r"-RSB-", "] ", text)
 
         # Unkown tags: 
         text = re.sub(r"-RCB-", "", text)
@@ -130,7 +137,7 @@ if __name__ == '__main__':
         "--ds_name",
         type=str,
         default='500N-KPCrowd',
-        choices=['500N-KPCrowd', 'DUC-2001', 'Inspec'],
+        choices=['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD'],
         help="Name of the dataset to use"
     )
 

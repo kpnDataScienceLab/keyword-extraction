@@ -41,8 +41,8 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001'):
     for text in tqdm(dataset.texts, ncols=80):
         predictions.append(test(text, arguments=arguments, k=k, lang='english'))
 
-    ap_metrics = mean_ap(dataset.labels, predictions, k=k, loose=True)
-    f1_metrics = mean_f1(dataset.labels, predictions, k=k, loose=True)
+    ap_metrics = mean_ap(dataset.labels, predictions, k=k)
+    f1_metrics = mean_f1(dataset.labels, predictions, k=k)
 
     print(f"AP scores {name}:")
     for key in ap_metrics:
@@ -63,46 +63,46 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--mprank",
-        help = "Use MultiPartiteRank",
-        nargs = "*"
+        help="Use MultiPartiteRank",
+        nargs="*"
     )
 
     # --------------------------------- all flags and methods below are working
 
     parser.add_argument(
         "--positionrank",
-        help = "Use PositionRank",
-        nargs = "*"
+        help="Use PositionRank",
+        nargs="*"
     )
 
     parser.add_argument(
         "--singlerank",
-        help = "Use SingleRank",
-        nargs = "*"
+        help="Use SingleRank",
+        nargs="*"
     )
 
     parser.add_argument(
         "--textrank",
-        help = "Use TextRank",
-        nargs = "*",
+        help="Use TextRank",
+        nargs="*"
     )
 
     parser.add_argument(
         "--topicrank",
-        help = "Use TopicRank",
-        nargs = '*',
+        help="Use TopicRank",
+        nargs='*'
     )
 
     parser.add_argument(
         "--yake",
         help="Use YAKE",
-        nargs='*',
+        nargs='*'
     )
 
     parser.add_argument(
         "--bm25",
         help="Use BM25",
-        nargs='*',
+        nargs='*'
     )
 
     parser.add_argument(
@@ -114,13 +114,15 @@ if __name__ == "__main__":
     parser.add_argument(
         "--rake",
         help="Use RAKE",
-        nargs='*',
+        nargs='*'
     )
+
     parser.add_argument(
         "--graphmodel",
         help="Use GRAPHMODEL",
-        nargs='*',
+        nargs='*'
     )
+
     parser.add_argument(
         "--k",
         type=int,
@@ -131,7 +133,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dataset",
         type=str,
-        choices=['500N-KPCrowd', 'DUC-2001', 'Inspec'],
+        choices=['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD'],
         help="Dataset to be used",
         default='DUC-2001'
     )
@@ -226,7 +228,7 @@ if __name__ == "__main__":
                         'arguments': args.topicrank,
                         'k': args.k,
                         'dataset_name': args.dataset}
-                       )        
+                       )
 
     try:
         for m in methods:
