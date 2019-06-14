@@ -10,6 +10,10 @@ from tqdm import tqdm
 from graphmodel import graphmodel
 import os
 
+# skips useless warnings in the pke methods
+import logging
+logging.basicConfig(level=logging.CRITICAL)
+
 
 def save_results(name, dataset_name, ap_metrics, f1_metrics):
     """
@@ -252,5 +256,5 @@ if __name__ == "__main__":
         for m in methods:
             run_pipeline(**m)
     except KeyboardInterrupt:
-        print("Terminating...")
+        print("\nTerminating...")
         quit()
