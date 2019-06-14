@@ -27,12 +27,15 @@ def save_results(name, dataset_name, ap_metrics, f1_metrics, match_type):
     if not os.path.isfile(f'evaluations/evaluations_{dataset_name}.csv'):
         with open(f'evaluations/evaluations_{dataset_name}.csv', mode='w') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            csv_writer.writerow(["method"] + list(ap_metrics.keys()) + list(f1_metrics.keys()) + ['matching_type', 'time'])
-            csv_writer.writerow([name.lower()] + list(ap_metrics.values()) + list(f1_metrics.values()) + [match_type, time_id])
+            csv_writer.writerow(
+                ["method"] + list(ap_metrics.keys()) + list(f1_metrics.keys()) + ['matching_type', 'time'])
+            csv_writer.writerow(
+                [name.lower()] + list(ap_metrics.values()) + list(f1_metrics.values()) + [match_type, time_id])
     else:
         with open(f'evaluations/evaluations_{dataset_name}.csv', mode='a') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            csv_writer.writerow([name.lower()] + list(ap_metrics.values()) + list(f1_metrics.values()) + [match_type, time_id])
+            csv_writer.writerow(
+                [name.lower()] + list(ap_metrics.values()) + list(f1_metrics.values()) + [match_type, time_id])
 
 
 def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', match_type='strict'):
@@ -74,6 +77,7 @@ if __name__ == "__main__":
     time_id = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
     methods = []
+    datasets = ['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD']
 
     parser = argparse.ArgumentParser()
 
@@ -144,13 +148,13 @@ if __name__ == "__main__":
         default=10
     )
 
-    parser.add_argument(
-        "--dataset",
-        type=str,
-        choices=['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD'],
-        help="Dataset to be used",
-        default='DUC-2001'
-    )
+    # parser.add_argument(
+    #     "--dataset",
+    #     type=str,
+    #     choices=['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD'],
+    #     help="Dataset to be used",
+    #     default='DUC-2001'
+    # )
 
     parser.add_argument(
         "--matchtype",
@@ -162,111 +166,112 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if args.mprank is not None:
-        if len(args.mprank) < 3:
-            args.mprank = ['1.1', '0.74', 'average']
-            print("MPRank: Alpha, threshold and method parameters not given.", 
-                "\nUsing default values: ", args.mprank)
-        else:
-            print("MPRank. Using arguments: ", args.mprank)
-        methods.append({'name': 'MultiPartiteRank',
-                        'train': pke_multipartiterank.train,
-                        'test': pke_multipartiterank.test,
-                        'arguments': args.mprank,
-                        'k': args.k,
-                        'dataset_name': args.dataset,
-                        'match_type': args.matchtype}
-                       )
+    for dataset in datasets:
+        if args.mprank is not None:
+            if len(args.mprank) < 3:
+                args.mprank = ['1.1', '0.74', 'average']
+                print("MPRank: Alpha, threshold and method parameters not given.",
+                      "\nUsing default values: ", args.mprank)
+            else:
+                print("MPRank. Using arguments: ", args.mprank)
+            methods.append({'name': 'MultiPartiteRank',
+                            'train': pke_multipartiterank.train,
+                            'test': pke_multipartiterank.test,
+                            'arguments': args.mprank,
+                            'k': args.k,
+                            'dataset_name': dataset,
+                            'match_type': args.matchtype}
+                           )
 
-    if args.positionrank is not None:
-        methods.append({'name': 'PositionRank',
-                        'train': pke_positionrank.train,
-                        'test': pke_positionrank.test,
-                        'arguments': args.positionrank,
-                        'k': args.k,
-                        'dataset_name': args.dataset,
-                        'match_type': args.matchtype}
-                       )
+        if args.positionrank is not None:
+            methods.append({'name': 'PositionRank',
+                            'train': pke_positionrank.train,
+                            'test': pke_positionrank.test,
+                            'arguments': args.positionrank,
+                            'k': args.k,
+                            'dataset_name': dataset,
+                            'match_type': args.matchtype}
+                           )
 
-    if args.singlerank is not None:
-        methods.append({'name': 'SingleRank',
-                        'train': pke_singlerank.train,
-                        'test': pke_singlerank.test,
-                        'arguments': args.singlerank,
-                        'k': args.k,
-                        'dataset_name': args.dataset,
-                        'match_type': args.matchtype}
-                       )
+        if args.singlerank is not None:
+            methods.append({'name': 'SingleRank',
+                            'train': pke_singlerank.train,
+                            'test': pke_singlerank.test,
+                            'arguments': args.singlerank,
+                            'k': args.k,
+                            'dataset_name': dataset,
+                            'match_type': args.matchtype}
+                           )
 
-    if args.textrank is not None:
-        methods.append({'name': 'TextRank',
-                        'train': pke_textrank.train,
-                        'test': pke_textrank.test,
-                        'arguments': args.textrank,
-                        'k': args.k,
-                        'dataset_name': args.dataset,
-                        'match_type': args.matchtype}
-                       )
+        if args.textrank is not None:
+            methods.append({'name': 'TextRank',
+                            'train': pke_textrank.train,
+                            'test': pke_textrank.test,
+                            'arguments': args.textrank,
+                            'k': args.k,
+                            'dataset_name': dataset,
+                            'match_type': args.matchtype}
+                           )
 
-    if args.tfidf is not None:
-        methods.append({'name': 'tfidf',
-                        'train': tfidf.train,
-                        'test': tfidf.test,
-                        'arguments': args.tfidf,
-                        'k': args.k,
-                        'dataset_name': args.dataset,
-                        'match_type': args.matchtype}
-                       )
+        if args.tfidf is not None:
+            methods.append({'name': 'tfidf',
+                            'train': tfidf.train,
+                            'test': tfidf.test,
+                            'arguments': args.tfidf,
+                            'k': args.k,
+                            'dataset_name': dataset,
+                            'match_type': args.matchtype}
+                           )
 
-    if args.bm25 is not None:
-        methods.append({'name': 'bm25',
-                        'train': bm25.train,
-                        'test': bm25.test,
-                        'arguments': args.bm25,
-                        'k': args.k,
-                        'dataset_name': args.dataset,
-                        'match_type': args.matchtype}
-                       )
+        if args.bm25 is not None:
+            methods.append({'name': 'bm25',
+                            'train': bm25.train,
+                            'test': bm25.test,
+                            'arguments': args.bm25,
+                            'k': args.k,
+                            'dataset_name': dataset,
+                            'match_type': args.matchtype}
+                           )
 
-    if args.rake is not None:
-        methods.append({'name': 'rake',
-                        'train': rake.train,
-                        'test': rake.test,
-                        'arguments': args.rake,
-                        'k': args.k,
-                        'dataset_name': args.dataset,
-                        'match_type': args.matchtype}
-                       )
+        if args.rake is not None:
+            methods.append({'name': 'rake',
+                            'train': rake.train,
+                            'test': rake.test,
+                            'arguments': args.rake,
+                            'k': args.k,
+                            'dataset_name': dataset,
+                            'match_type': args.matchtype}
+                           )
 
-    if args.yake is not None:
-        methods.append({'name': 'yake',
-                        'train': pke_yake.train,
-                        'test': pke_yake.test,
-                        'arguments': args.yake,
-                        'k': args.k,
-                        'dataset_name': args.dataset,
-                        'match_type': args.matchtype}
-                       )
+        if args.yake is not None:
+            methods.append({'name': 'yake',
+                            'train': pke_yake.train,
+                            'test': pke_yake.test,
+                            'arguments': args.yake,
+                            'k': args.k,
+                            'dataset_name': dataset,
+                            'match_type': args.matchtype}
+                           )
 
-    if args.graphmodel is not None:
-        methods.append({'name': 'graphmodel',
-                        'train': graphmodel.train,
-                        'test': graphmodel.test,
-                        'arguments': args.graphmodel,
-                        'k': args.k,
-                        'dataset_name': args.dataset,
-                        'match_type': args.matchtype}
-                       )
+        if args.graphmodel is not None:
+            methods.append({'name': 'graphmodel',
+                            'train': graphmodel.train,
+                            'test': graphmodel.test,
+                            'arguments': args.graphmodel,
+                            'k': args.k,
+                            'dataset_name': dataset,
+                            'match_type': args.matchtype}
+                           )
 
-    if args.topicrank is not None:
-        methods.append({'name': 'TopicRank',
-                        'train': pke_topicrank.train,
-                        'test': pke_topicrank.test,
-                        'arguments': args.topicrank,
-                        'k': args.k,
-                        'dataset_name': args.dataset,
-                        'match_type': args.matchtype}
-                       )
+        if args.topicrank is not None:
+            methods.append({'name': 'TopicRank',
+                            'train': pke_topicrank.train,
+                            'test': pke_topicrank.test,
+                            'arguments': args.topicrank,
+                            'k': args.k,
+                            'dataset_name': dataset,
+                            'match_type': args.matchtype}
+                           )
 
     try:
         for m in methods:
