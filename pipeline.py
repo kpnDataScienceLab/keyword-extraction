@@ -27,7 +27,7 @@ def save_results(name, dataset_name, ap_metrics, f1_metrics):
             csv_writer.writerow([name] + list(ap_metrics.values()) + list(f1_metrics.values()))
 
 
-def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001'):
+def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', match_type='strict'):
     print()
     print(f'Evaluating {name}...')
 
@@ -42,8 +42,8 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001'):
         predictions.append(test(text, arguments=arguments, k=k, lang='english'))
 
     print(f'calculating scores {name}...')
-    ap_metrics = mean_ap(dataset.labels, predictions, k=k, loose=True)
-    f1_metrics = mean_f1(dataset.labels, predictions, k=k, loose=True)
+    ap_metrics = mean_ap(dataset.labels, predictions, k=k, match_type=match_type)
+    f1_metrics = mean_f1(dataset.labels, predictions, k=k, match_type=match_type)
 
     print(f"AP scores {name}:")
     for key in ap_metrics:
@@ -67,8 +67,6 @@ if __name__ == "__main__":
         help="Use MultiPartiteRank",
         nargs="*"
     )
-
-    # --------------------------------- all flags and methods below are working
 
     parser.add_argument(
         "--positionrank",
@@ -139,6 +137,14 @@ if __name__ == "__main__":
         default='DUC-2001'
     )
 
+    parser.add_argument(
+        "--matchtype",
+        type=str,
+        choices=['strict', 'levenshtein', 'spacy'],
+        help="Matching function to use when evaluating keyword similarity",
+        default='strict'
+    )
+
     args = parser.parse_args()
 
     if args.mprank is not None:
@@ -147,7 +153,8 @@ if __name__ == "__main__":
                         'test': pke_multipartiterank.test,
                         'arguments': args.mprank,
                         'k': args.k,
-                        'dataset_name': args.dataset}
+                        'dataset_name': args.dataset,
+                        'match_type': args.matchtype}
                        )
 
     if args.positionrank is not None:
@@ -156,7 +163,8 @@ if __name__ == "__main__":
                         'test': pke_positionrank.test,
                         'arguments': args.positionrank,
                         'k': args.k,
-                        'dataset_name': args.dataset}
+                        'dataset_name': args.dataset,
+                        'match_type': args.matchtype}
                        )
 
     if args.singlerank is not None:
@@ -165,7 +173,8 @@ if __name__ == "__main__":
                         'test': pke_singlerank.test,
                         'arguments': args.singlerank,
                         'k': args.k,
-                        'dataset_name': args.dataset}
+                        'dataset_name': args.dataset,
+                        'match_type': args.matchtype}
                        )
 
     if args.textrank is not None:
@@ -174,7 +183,8 @@ if __name__ == "__main__":
                         'test': pke_textrank.test,
                         'arguments': args.textrank,
                         'k': args.k,
-                        'dataset_name': args.dataset}
+                        'dataset_name': args.dataset,
+                        'match_type': args.matchtype}
                        )
 
     if args.tfidf is not None:
@@ -183,7 +193,8 @@ if __name__ == "__main__":
                         'test': tfidf.test,
                         'arguments': args.tfidf,
                         'k': args.k,
-                        'dataset_name': args.dataset}
+                        'dataset_name': args.dataset,
+                        'match_type': args.matchtype}
                        )
 
     if args.bm25 is not None:
@@ -192,7 +203,8 @@ if __name__ == "__main__":
                         'test': bm25.test,
                         'arguments': args.bm25,
                         'k': args.k,
-                        'dataset_name': args.dataset}
+                        'dataset_name': args.dataset,
+                        'match_type': args.matchtype}
                        )
 
     if args.rake is not None:
@@ -201,7 +213,8 @@ if __name__ == "__main__":
                         'test': rake.test,
                         'arguments': args.rake,
                         'k': args.k,
-                        'dataset_name': args.dataset}
+                        'dataset_name': args.dataset,
+                        'match_type': args.matchtype}
                        )
 
     if args.yake is not None:
@@ -210,7 +223,8 @@ if __name__ == "__main__":
                         'test': pke_yake.test,
                         'arguments': args.yake,
                         'k': args.k,
-                        'dataset_name': args.dataset}
+                        'dataset_name': args.dataset,
+                        'match_type': args.matchtype}
                        )
 
     if args.graphmodel is not None:
@@ -219,7 +233,8 @@ if __name__ == "__main__":
                         'test': graphmodel.test,
                         'arguments': args.graphmodel,
                         'k': args.k,
-                        'dataset_name': args.dataset}
+                        'dataset_name': args.dataset,
+                        'match_type': args.matchtype}
                        )
 
     if args.topicrank is not None:
@@ -228,7 +243,8 @@ if __name__ == "__main__":
                         'test': pke_topicrank.test,
                         'arguments': args.topicrank,
                         'k': args.k,
-                        'dataset_name': args.dataset}
+                        'dataset_name': args.dataset,
+                        'match_type': args.matchtype}
                        )
 
     try:
