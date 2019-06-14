@@ -9,11 +9,9 @@ def spacy_check(keyword, k_list, threshold=0.85):
     Checks a keyword against a list of keywords, returning true if the keyword is at a Levenshtein distance
     of less or equal than the threshold compared to any word in the list.
     """
-    graph_model_config('', '', 'english')
     for k in k_list:
         similarity = get_model().nlp(keyword).similarity(get_model().nlp(k))
         if similarity > threshold:
-            # print(f'match-> {keyword} : {l} @ {sim}')
             return True
     return False
 
@@ -215,6 +213,10 @@ def get_results(labels_list, predictions_list, k=10, match_type='strict'):
     # tqdm parameters
     total = len(predictions_list)
     no_tqdm = (match_type != 'spacy')
+
+    # train the spacy model only once
+    if match_type == 'spacy':
+        graph_model_config('', '', 'english')
 
     for labels, predictions in tqdm(zip(labels_list, predictions_list), ncols=80, total=total, disable=no_tqdm):
         ap_score, f1_score = f1_ap(labels, predictions, k, match_type)

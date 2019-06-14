@@ -8,14 +8,18 @@ import argparse
 import csv
 from tqdm import tqdm
 from graphmodel import graphmodel
+from datetime import datetime
 import os
 
 # skips useless warnings in the pke methods
 import logging
+
 logging.basicConfig(level=logging.CRITICAL)
 
+global time_id
 
-def save_results(name, dataset_name, ap_metrics, f1_metrics):
+
+def save_results(name, dataset_name, ap_metrics, f1_metrics, match_type):
     """
     Save results or append them to an existing csv file
     """
@@ -23,17 +27,18 @@ def save_results(name, dataset_name, ap_metrics, f1_metrics):
     if not os.path.isfile(f'evaluations/evaluations_{dataset_name}.csv'):
         with open(f'evaluations/evaluations_{dataset_name}.csv', mode='w') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            csv_writer.writerow(["Method"] + list(ap_metrics.keys()) + list(f1_metrics.keys()))
-            csv_writer.writerow([name] + list(ap_metrics.values()) + list(f1_metrics.values()))
+            csv_writer.writerow(["method"] + list(ap_metrics.keys()) + list(f1_metrics.keys()) + ['matching_type', 'time'])
+            csv_writer.writerow([name.lower()] + list(ap_metrics.values()) + list(f1_metrics.values()) + [match_type, time_id])
     else:
         with open(f'evaluations/evaluations_{dataset_name}.csv', mode='a') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            csv_writer.writerow([name] + list(ap_metrics.values()) + list(f1_metrics.values()))
+            csv_writer.writerow([name.lower()] + list(ap_metrics.values()) + list(f1_metrics.values()) + [match_type, time_id])
 
 
 def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', match_type='strict'):
     print()
-    print(f'Evaluating {name}')
+    print(f'Evaluating {name.upper()} on {dataset_name}')
+    print()
 
     # loading the dataset
     dataset = Dataset(dataset_name)
@@ -44,7 +49,7 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', ma
 
     print('Running predictions...')
     predictions = []
-    for text in tqdm(dataset.texts, ncols=80):
+    for text in tqdm(dataset.texts, ncols=80, smoothing=0.15):
         predictions.append(test(text, arguments=arguments, k=k, lang='english'))
 
     print(f'Calculating scores...')
@@ -59,10 +64,15 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', ma
     for key in results['f1']:
         print(f"{key}:".rjust(15) + f"{results['f1'][key]:.3f}".rjust(7))
 
-    save_results(name, dataset_name, results['ap'], results['f1'])
+    save_results(name, dataset_name, results['ap'], results['f1'], match_type)
 
 
 if __name__ == "__main__":
+
+    # initialize the time id to identify the current run
+    global time_id
+    time_id = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+
     methods = []
 
     parser = argparse.ArgumentParser()
@@ -151,7 +161,7 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-
+    
     if args.mprank is not None:
         methods.append({'name': 'MultiPartiteRank',
                         'train': pke_multipartiterank.train,

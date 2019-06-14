@@ -25,7 +25,7 @@ def save_keywords(extracted, run_id):
 
 def test(text,
          arguments,
-         n=-1,
+         k=-1,
          lang='dutch',
          punctuation=False):
 
@@ -33,7 +33,7 @@ def test(text,
     stopwords = nltk.corpus.stopwords.words(lang)
 
     r = Rake(
-        language="dutch",
+        language=lang,
         stopwords=stopwords,
         max_length=3
     )
@@ -42,7 +42,7 @@ def test(text,
         text = text.translate(str.maketrans('', '', string.punctuation))
 
     keywords = get_keywords(r, text)
-    return keywords[0:n] if len(keywords) >= n else keywords
+    return keywords[0:k] if len(keywords) >= k else keywords
 
 
 # currently useless
