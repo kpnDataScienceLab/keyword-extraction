@@ -77,7 +77,6 @@ if __name__ == "__main__":
     time_id = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
     methods = []
-    datasets = ['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD']
 
     parser = argparse.ArgumentParser()
 
@@ -148,13 +147,13 @@ if __name__ == "__main__":
         default=10
     )
 
-    # parser.add_argument(
-    #     "--dataset",
-    #     type=str,
-    #     choices=['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD'],
-    #     help="Dataset to be used",
-    #     default='DUC-2001'
-    # )
+    parser.add_argument(
+        "--dataset",
+        type=str,
+        choices=['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD', 'all'],
+        help="Dataset to be used",
+        default='DUC-2001'
+    )
 
     parser.add_argument(
         "--matchtype",
@@ -166,14 +165,20 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    if args.dataset == 'all':
+        datasets = ['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD']
+    else:
+        datasets = [args.dataset]
+
     for dataset in datasets:
         if args.mprank is not None:
             if len(args.mprank) < 3:
                 args.mprank = ['1.1', '0.74', 'average']
-                print("MPRank: Alpha, threshold and method parameters not given.",
-                      "\nUsing default values: ", args.mprank)
+                # print("MPRank: Alpha, threshold and method parameters not given.",
+                #       "\nUsing default values: ", args.mprank)
             else:
-                print("MPRank. Using arguments: ", args.mprank)
+                # print("MPRank. Using arguments: ", args.mprank)
+                pass
             methods.append({'name': 'MultiPartiteRank',
                             'train': pke_multipartiterank.train,
                             'test': pke_multipartiterank.test,
