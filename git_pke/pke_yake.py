@@ -41,8 +41,8 @@ def train(dataset,arguments,lang='dutch'):
 	pass
 
 # [tested]
-def test(text, arguments, n=5, lang = 'dutch'):
+def test(text, arguments, k=5, lang = 'dutch'):
 	if(lang == 'dutch'):
-		return pke_yake(text, n = n, language = 'nl')
+		return pke_yake(text, n = k, language = 'nl')
 	else:
-		return pke_yake(text, n = n, language = 'en')
+		return pke_yake(text, n = k, language = 'en')

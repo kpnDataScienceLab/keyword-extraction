@@ -24,32 +24,30 @@ class GraphWord2Vec:
             lexeme = self.nlp.vocab[word]
             lexeme.is_stop = True  
     
-    def sentence_segment(self, doc, candidate_pos, lower):
+    def segment(self, doc, candidate_pos, lower):
         """Store those words only in cadidate_pos"""
-        sentences = []
-        for sent in doc.sents:
-            selected_words = []
-            for token in sent:
-                # Store words only with cadidate POS tag
-                if token.pos_ in candidate_pos and token.is_stop is False:
-                    if lower is True:
-                        selected_words.append(self.nlp(token.text.lower()))
-                    else:
-                        selected_words.append(token)
-            sentences.append(selected_words)
-        return sentences
+        chunks = []
+        # print(type(doc.noun_chunks))
+        # print(type(doc.ents))
         
-    def get_vocab(self, sentences):
+        for chunk in doc.noun_chunks:
+            if lower is True:
+                selected_words = (self.nlp(chunk.text.lower()))
+            else:
+                selected_words = chunk
+            chunks.append(selected_words)
+        return chunks
+        
+    def get_vocab(self, chunks):
         """Get all tokens"""
         vocab = OrderedDict()
         check = set()
         i = 0
-        for sentence in sentences:
-            for word in sentence:
-                if word.text not in check:
-                    vocab[word] = i
-                    i += 1
-                    check.add(word.text)
+        for chunk in chunks:
+            if chunk.text not in check:
+                vocab[chunk] = i
+                i += 1
+                check.add(chunk.text)
         return vocab
     
     def symmetrize(self, a):
@@ -78,7 +76,7 @@ class GraphWord2Vec:
     def get_keywords(self, number=10):
         """Print top number keywords"""
         node_weight = OrderedDict(sorted(self.node_weight.items(), key=lambda t: t[1], reverse=True))
-        return list(node_weight.keys())[:number]
+        return [k.text for k in list(node_weight.keys())[:number]]
 
         # for i, (key, value) in enumerate(node_weight.items()):
         #     print(str(key) + ' - ' + str(value))
@@ -96,7 +94,7 @@ class GraphWord2Vec:
         doc = self.nlp(text)
         
         # Filter sentences
-        sentences = self.sentence_segment(doc, candidate_pos, lower) # list of list of words
+        sentences = self.segment(doc, candidate_pos, lower) # list of list of words
         
         # Build vocabulary
         vocab = self.get_vocab(sentences)
@@ -126,9 +124,15 @@ class GraphWord2Vec:
             node_weight[word] = pr[index]
         self.node_weight = node_weight
 
-global _model
+global _model,loaded
+_model = None
+loaded = False
 
 def train(dataset,arguments,lang='dutch'):
+    global loaded 
+    if loaded:
+        return
+    loaded = True
     global _model
     if lang=='dutch':
         from spacy.lang.nl.stop_words import STOP_WORDS
@@ -153,5 +157,5 @@ def train(dataset,arguments,lang='dutch'):
 
 def test(text, arguments, k=5, lang=5):
     global _model
-    _model.analyze(text, candidate_pos = ['NOUN', 'PROPN'], lower=True)
+    _model.analyze(text, candidate_pos = ['NOUN', 'PROPN'], lower=False)
     return _model.get_keywords(k)
