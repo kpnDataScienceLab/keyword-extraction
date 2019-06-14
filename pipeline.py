@@ -65,7 +65,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--mprank",
         help="Use MultiPartiteRank",
-        nargs="*"
+        nargs="*",
     )
 
     parser.add_argument(
@@ -148,6 +148,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.mprank is not None:
+        if len(args.mprank) < 3:
+            args.mprank = ['1.1', '0.74', 'average']
+            print("MPRank: Alpha, threshold and method parameters not given.", 
+                "\nUsing default values: ", args.mprank)
+        else:
+            print("MPRank. Using arguments: ", args.mprank)
         methods.append({'name': 'MultiPartiteRank',
                         'train': pke_multipartiterank.train,
                         'test': pke_multipartiterank.test,
