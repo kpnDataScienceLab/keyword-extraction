@@ -161,7 +161,7 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    
+
     if args.mprank is not None:
         methods.append({'name': 'MultiPartiteRank',
                         'train': pke_multipartiterank.train,
