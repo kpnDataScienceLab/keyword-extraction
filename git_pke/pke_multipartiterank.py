@@ -34,6 +34,7 @@ def train(dataset,arguments,lang='dutch'):
 	pass
 
 def test(text, arguments, k=5, lang = 'dutch'):
+	print(arguments)
 	if(lang == 'dutch'):
 		return pke_multipartiteRank(text, n = k, language = 'dutch')
 	else:
