@@ -11,7 +11,7 @@ def returnKeywords(topNkeyphrases):
 	return output
 
 # MultipartiteRank
-def pke_multipartiteRank(text, n = 5, language = 'dutch'):
+def pke_multipartiteRank(text, arguments, n = 5, language = 'dutch'):
 
 	multiPartiteRank_extractor = pke.unsupervised.MultipartiteRank()
 	
@@ -22,9 +22,13 @@ def pke_multipartiteRank(text, n = 5, language = 'dutch'):
 	stoplist += nltk.corpus.stopwords.words(language)
 	multiPartiteRank_extractor.candidate_selection(pos = POS,
 												stoplist = stoplist)
-	multiPartiteRank_extractor.candidate_weighting(alpha = 1.1,
-												threshold = 0.74,
-												method = 'average')
+
+	alpha = float(arguments[0])
+	threshold = float(arguments[1])
+	method = arguments[2]
+	multiPartiteRank_extractor.candidate_weighting(alpha = alpha,
+												threshold = threshold,
+												method = method)
 	keyphrases = multiPartiteRank_extractor.get_n_best(n = n)
 	return returnKeywords(keyphrases)
 
@@ -35,6 +39,6 @@ def train(dataset,arguments,lang='dutch'):
 
 def test(text, arguments, k=5, lang = 'dutch'):
 	if(lang == 'dutch'):
-		return pke_multipartiteRank(text, n = k, language = 'dutch')
+		return pke_multipartiteRank(text, arguments, n = k,  language = 'dutch')
 	else:
-		return pke_multipartiteRank(text, n = k, language = 'english')
+		return pke_multipartiteRank(text, arguments, n = k,  language = 'english')
