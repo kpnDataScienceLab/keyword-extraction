@@ -2,8 +2,9 @@ import nltk
 import numpy as np
 from math import log
 from sklearn.feature_extraction.text import CountVectorizer
+from tqdm import tqdm
 
-global _freq_matrix
+global _freq_matrix  # for each word, stores the N of documents that contain it
 global _vectorizer
 global _l_avg
 global _n_docs
@@ -52,14 +53,16 @@ def train(dataset, arguments, lang='dutch'):
                                   strip_accents='unicode',
                                   ngram_range=(1, 3))
     freq_matrix = _vectorizer.fit_transform(dataset)
-    freq_matrix = freq_matrix.toarray()
 
     # global parameters
     _l_avg = np.mean(freq_matrix.sum(axis=1))
     _n_docs = freq_matrix.shape[0]
+
+    n_words = freq_matrix.shape[1]
+
     _freq_matrix = {}
-    for i, word in enumerate(_vectorizer.get_feature_names()):
-        _freq_matrix[word] = np.array(freq_matrix[:, i])
+    for i, word in tqdm(enumerate(_vectorizer.get_feature_names()), total=n_words):
+        _freq_matrix[word] = freq_matrix.getcol(i)
 
 
 def remove_redundancy(keywords):
@@ -79,7 +82,7 @@ def remove_redundancy(keywords):
             # check that the length of the two keywords differs by only one,
             # and check whether one is a substring of the other
             if (k_lens[c_idx] - 1) <= k_lens[idx] <= k_lens[c_idx] + 1 \
-                    and (keywords[c_idx] in keywords[idx] or keywords[idx] in keywords[c_idx]):  # fixme
+                    and (keywords[c_idx] in keywords[idx] or keywords[idx] in keywords[c_idx]):
                 # remove the lower scored keyword
                 del keywords[idx]
                 del k_lens[idx]
