@@ -201,7 +201,8 @@ def f1_ap(labels, predictions, k=10, match_type='strict', debug=False):
             tp += 1.0
             score += tp / (i + 1.0)
 
-    print("\b\b]\n\n")
+    if debug:
+        print("\b\b]\n\n")
 
     if tp == 0.:
         return 0., 0.
@@ -213,6 +214,10 @@ def f1_ap(labels, predictions, k=10, match_type='strict', debug=False):
     recall = tp / tp_fn
 
     ap_score = score / tp_fp
+
+    if ap_score == 2.0:
+        breakpoint()
+
     f1_score = (2 * precision * recall) / (precision + recall)
 
     return ap_score, f1_score
