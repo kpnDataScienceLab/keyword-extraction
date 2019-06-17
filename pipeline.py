@@ -162,7 +162,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--matchtype",
         type=str,
-        choices=['strict', 'levenshtein', 'spacy'],
+        choices=['strict', 'levenshtein', 'spacy','intersect'],
         help="Matching function to use when evaluating keyword similarity",
         default='strict'
     )
