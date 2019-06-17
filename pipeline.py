@@ -56,6 +56,7 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', ma
         try:
             predictions.append(test(text, arguments=arguments, k=k, lang='english'))
         except ValueError:
+            print("This text went wrong!\n", text)
             predictions.append([])
 
     print(f'Calculating scores...')

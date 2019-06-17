@@ -3,14 +3,17 @@ from graphmodel.graphmodel import train as graph_model_config
 from graphmodel.graphmodel import get_model
 from tqdm import tqdm
 
-
+optim_dict = {}
 def spacy_check(keyword, k_list, threshold=0.85):
     """
     Checks a keyword against a list of keywords, returning true if the keyword is at a Levenshtein distance
     of less or equal than the threshold compared to any word in the list.
     """
     for k in k_list:
-        similarity = get_model().nlp(keyword).similarity(get_model().nlp(k))
+        try:
+            similarity = optim_dict[(keyword,k)]
+        except KeyError:
+            similarity = optim_dict[(keyword,k)] = get_model().nlp(keyword).similarity(get_model().nlp(k))
         if similarity > threshold:
             return True
     return False
