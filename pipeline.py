@@ -10,6 +10,7 @@ from tqdm import tqdm
 from graphmodel import graphmodel
 from datetime import datetime
 import os
+import traceback
 
 # skips useless warnings in the pke methods
 import logging
@@ -148,7 +149,7 @@ if __name__ == "__main__":
         "--k",
         type=int,
         help="Cutoff for the keyword extraction method and for the score calculations",
-        default=10
+        default=20
     )
 
     parser.add_argument(

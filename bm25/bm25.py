@@ -61,8 +61,8 @@ def train(dataset, arguments, lang='dutch'):
     n_words = freq_matrix.shape[1]
 
     _freq_matrix = {}
-    for i, word in tqdm(enumerate(_vectorizer.get_feature_names()), total=n_words):
-        _freq_matrix[word] = freq_matrix.getcol(i)
+    for i, word in tqdm(enumerate(_vectorizer.get_feature_names()), total=n_words, ncols=80):
+        _freq_matrix[word] = freq_matrix.getcol(i).count_nonzero()
 
 
 def remove_redundancy(keywords):
@@ -128,7 +128,7 @@ def test(text, arguments, k=40, lang='dutch'):
     for word in freq_matrix:
         # term level
         tf_dt = freq_matrix[word]
-        dft = np.count_nonzero(_freq_matrix.get(word, np.array([0.])))
+        dft = _freq_matrix.get(word, 0)
         s = score_bm25(tf_dt, l_d, _l_avg, n_docs, dft)
         scores.append((word, s))
 
