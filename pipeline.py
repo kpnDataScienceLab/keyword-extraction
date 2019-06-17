@@ -53,7 +53,10 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', ma
     print('Running predictions...')
     predictions = []
     for text in tqdm(dataset.texts, ncols=80, smoothing=0.15):
-        predictions.append(test(text, arguments=arguments, k=k, lang='english'))
+        try:
+            predictions.append(test(text, arguments=arguments, k=k, lang='english'))
+        except ValueError:
+            predictions.append([])
 
     print(f'Calculating scores...')
     results = get_results(dataset.labels, predictions, k=k, match_type=match_type)
