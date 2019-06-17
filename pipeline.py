@@ -53,9 +53,15 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', ma
 
     print('Running predictions...')
     predictions = []
-    for idx, text in tqdm(enumerate(dataset.texts), ncols=80, smoothing=0.15, total=len(dataset)):
+    for idx, (text, label) in tqdm(enumerate(zip(dataset.texts, dataset.labels)), ncols=80, smoothing=0.15, total=len(dataset), disable=not __debug__):
         try:
             predictions.append(test(text, arguments=arguments, k=k, lang='english'))
+            # debug statments:
+            if not __debug__:  # fixme
+                print('#' * 80)
+                print(f"\n\nText:\n\n{text}")
+                print(f"\n\nLabels:\n\n{label}")
+                print(f"\n\nPredictions:\n\n{predictions[-1]}\n")
         except ValueError:
             tqdm.write(f"[WARNING] Skipping text {idx + 1} due to ValueError.")
             predictions.append([])
