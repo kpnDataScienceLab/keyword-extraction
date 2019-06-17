@@ -18,6 +18,11 @@ def spacy_check(keyword, k_list, threshold=0.85):
             return True
     return False
 
+def intersect(s1,s2):
+    s1 = set(s1.split())
+    s2 = set(split for sent in s2 for split in sent.split())
+
+    return len(s1 & s2) > 0 
 
 def levenshtein(s1, s2):
     """
@@ -71,6 +76,9 @@ def true_positive_check(keyword, labels, predictions, match_type):
     """
     if match_type == 'strict':
         return keyword in labels and keyword not in predictions
+    
+    if match_type == 'intersect':
+        return intersect(keyword , labels) and not intersect(keyword, predictions)
 
     elif match_type == 'levenshtein':
         return levenshtein_check(keyword, labels) and not levenshtein_check(keyword, predictions)
