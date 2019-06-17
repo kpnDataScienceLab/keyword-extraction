@@ -53,21 +53,15 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', ma
 
     print('Running predictions...')
     predictions = []
-    for idx, (text, label) in tqdm(enumerate(zip(dataset.texts, dataset.labels)), ncols=80, smoothing=0.15, total=len(dataset), disable=not __debug__):
+    for idx, (text, label) in tqdm(enumerate(zip(dataset.texts, dataset.labels)), ncols=80, smoothing=0.15, total=len(dataset)):
         try:
             predictions.append(test(text, arguments=arguments, k=k, lang='english'))
-            # debug statments:
-            if not __debug__:  # fixme
-                print('#' * 80)
-                print(f"\n\nText:\n\n{text}")
-                print(f"\n\nLabels:\n\n{label}")
-                print(f"\n\nPredictions:\n\n{predictions[-1]}\n")
         except ValueError:
             tqdm.write(f"[WARNING] Skipping text {idx + 1} due to ValueError.")
             predictions.append([])
 
     print(f'Calculating scores...')
-    results = get_results(dataset.labels, predictions, k=k, match_type=match_type)
+    results = get_results(dataset.labels, predictions, k=k, match_type=match_type, debug=(not __debug__))
 
     print(f"AP scores {name}:")
     for key in results['ap']:
