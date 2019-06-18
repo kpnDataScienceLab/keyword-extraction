@@ -16,7 +16,7 @@ def pke_multipartiteRank(text, arguments, n = 5, language = 'dutch'):
 	multiPartiteRank_extractor = pke.unsupervised.MultipartiteRank()
 	
 	POS = {'NOUN', 'PROPN', 'ADJ'}
-	multiPartiteRank_extractor.load_document(input = text)
+	multiPartiteRank_extractor.load_document(input = text, language = language)
 	stoplist = list(string.punctuation)
 	stoplist += ['-lrb-', '-rrb-', '-lcb-', '-rcb-', '-lsb-', '-rsb-']
 	stoplist += nltk.corpus.stopwords.words(language)

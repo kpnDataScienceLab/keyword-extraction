@@ -55,8 +55,9 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', ma
     for text in tqdm(dataset.texts, ncols=80, smoothing=0.15):
         try:
             predictions.append(test(text, arguments=arguments, k=k, lang='english'))
-        except ValueError:
+        except ValueError as e:
             print("This text went wrong!\n", text)
+            print(e)
             predictions.append([])
 
     print(f'Calculating scores...')
@@ -154,7 +155,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dataset",
         type=str,
-        choices=['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD', 'all'],
+        choices=['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD','dutch_sub', 'all'],
         help="Dataset to be used",
         default='DUC-2001'
     )
@@ -170,7 +171,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.dataset == 'all':
-        datasets = ['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD']
+        datasets = ['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD','dutch_sub']
     else:
         datasets = [args.dataset]
 

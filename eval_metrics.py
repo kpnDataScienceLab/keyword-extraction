@@ -19,10 +19,13 @@ def spacy_check(keyword, k_list, threshold=0.85):
     return False
 
 def intersect(s1,s2):
+    s1_org = s1
+    s2_org = s2
     s1 = set(s1.split())
     s2 = set(split for sent in s2 for split in sent.split())
-
-    return len(s1 & s2) > 0 
+    if len(s1 & s2) > 0:
+        print(f'match word:{s1 & s2}. keyword:{s1_org}, targets:{s2_org}')
+    return len(s1 & s2) > 0
 
 def levenshtein(s1, s2):
     """
@@ -247,3 +250,11 @@ def get_results(labels_list, predictions_list, k=10, match_type='strict'):
                   'f1_median': np.median(f1_scores)}
 
     return {'f1': f1_results, 'ap': ap_results}
+
+
+if __name__ == '__main__':
+    print(intersect('test',['dit is een mooie testzin','hehe']))
+    print(intersect('test',['dit is een mooie test zin','hehe']))
+    print(intersect('test',['dit is een mooie testzin','hehe','test']))
+    
+    
