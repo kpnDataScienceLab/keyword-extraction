@@ -4,6 +4,8 @@ from graphmodel.graphmodel import get_model
 from tqdm import tqdm
 
 optim_dict = {}
+
+
 def spacy_check(keyword, k_list, threshold=0.85):
     """
     Checks a keyword against a list of keywords, returning true if the keyword is at a Levenshtein distance
@@ -11,18 +13,20 @@ def spacy_check(keyword, k_list, threshold=0.85):
     """
     for k in k_list:
         try:
-            similarity = optim_dict[(keyword,k)]
+            similarity = optim_dict[(keyword, k)]
         except KeyError:
-            similarity = optim_dict[(keyword,k)] = get_model().nlp(keyword).similarity(get_model().nlp(k))
+            similarity = optim_dict[(keyword, k)] = get_model().nlp(keyword).similarity(get_model().nlp(k))
         if similarity > threshold:
             return True
     return False
 
-def intersect(s1,s2):
+
+def intersect(s1, s2):
     s1 = set(s1.split())
     s2 = set(split for sent in s2 for split in sent.split())
 
-    return len(s1 & s2) > 0 
+    return len(s1 & s2) > 0
+
 
 def levenshtein(s1, s2):
     """
@@ -76,9 +80,9 @@ def true_positive_check(keyword, labels, predictions, match_type):
     """
     if match_type == 'strict':
         return keyword in labels and keyword not in predictions
-    
+
     if match_type == 'intersect':
-        return intersect(keyword , labels) and not intersect(keyword, predictions)
+        return intersect(keyword, labels) and not intersect(keyword, predictions)
 
     elif match_type == 'levenshtein':
         return levenshtein_check(keyword, labels) and not levenshtein_check(keyword, predictions)
@@ -214,9 +218,6 @@ def f1_ap(labels, predictions, k=10, match_type='strict', debug=False):
     recall = tp / tp_fn
 
     ap_score = score / tp_fp
-
-    if ap_score == 2.0:
-        breakpoint()
 
     f1_score = (2 * precision * recall) / (precision + recall)
 
