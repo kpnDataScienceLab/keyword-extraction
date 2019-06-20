@@ -27,8 +27,8 @@ def clean_text(text):
 
 
 def get_data_vocabulary():
-    fname = '../aligned_epg_transcriptions_npo1_npo2.csv'
-    texts = pd.read_csv(fname)["text"]
+    fname = '../datasets/transcriptions_fixed.csv'
+    texts = pd.read_csv(fname)["fixed_text"]
 
     # clean and stem texts, and store all unique words
     vocab = set()

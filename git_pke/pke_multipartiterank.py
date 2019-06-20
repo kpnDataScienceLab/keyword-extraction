@@ -1,7 +1,9 @@
-import pke 
+import pke
 import nltk
 import string
 from pke import compute_document_frequency
+
+# from cleandata import readCleanTranscript
 
 topic_testing = "A B-52 bomber crashed and burst into flames early today on a runway while practicing \
 				\"touch-and-go\" landings at K.I. Sawyer Air Force Base , officials said . All eight  \
@@ -55,57 +57,54 @@ topic_testing = "A B-52 bomber crashed and burst into flames early today on a ru
 				  incomplete . Wurtsmith and Sawyer are Michigan's two SAC bases ."
 
 
-
 def returnKeywords(topNkeyphrases):
-	output = []
-	for phrase in topNkeyphrases:
-		output.append(phrase[0])
-	return output
+    output = []
+    for phrase in topNkeyphrases:
+        output.append(phrase[0])
+    return output
+
 
 # MultipartiteRank
-def pke_multipartiteRank(text, arguments, n = 5, language = 'dutch'):
+def pke_multipartiteRank(text, arguments, n=5, language='dutch'):
+    multiPartiteRank_extractor = pke.unsupervised.MultipartiteRank()
+    parser_language = 'nl' if language == 'dutch' else 'en'
 
-	multiPartiteRank_extractor = pke.unsupervised.MultipartiteRank()
-	parser_language = 'nl' if language == 'dutch' else 'en'
-	
-	POS = {'NOUN', 'PROPN', 'ADJ'}
+    POS = {'NOUN', 'PROPN', 'ADJ'}
+    multiPartiteRank_extractor.load_document(input=text, language=parser_language)
+    stoplist = list(string.punctuation)
+    stoplist += ['-lrb-', '-rrb-', '-lcb-', '-rcb-', '-lsb-', '-rsb-']
+    stoplist += nltk.corpus.stopwords.words(language)
+    multiPartiteRank_extractor.candidate_selection(pos=POS,
+                                                   stoplist=stoplist)
 
-	multiPartiteRank_extractor.load_document(input = text, language = parser_language)
-	stoplist = list(string.punctuation)
-	stoplist += ['-lrb-', '-rrb-', '-lcb-', '-rcb-', '-lsb-', '-rsb-']
-	stoplist += nltk.corpus.stopwords.words(language)
-	multiPartiteRank_extractor.candidate_selection(pos = POS,
-												stoplist = stoplist)
-
-	alpha = float(arguments[0])
-	threshold = float(arguments[1])
-	method = arguments[2]
-	multiPartiteRank_extractor.candidate_weighting(alpha = alpha,
-												threshold = threshold,
-												method = method)
-	keyphrases = multiPartiteRank_extractor.get_n_best(n = n)
-	return returnKeywords(keyphrases)
+    alpha = float(arguments[0])
+    threshold = float(arguments[1])
+    method = arguments[2]
+    multiPartiteRank_extractor.candidate_weighting(alpha=alpha,
+                                                   threshold=threshold,
+                                                   method=method)
+    keyphrases = multiPartiteRank_extractor.get_n_best(n=n)
+    return returnKeywords(keyphrases)
 
 
 # Required for interfacing
-def train(dataset,arguments,lang='dutch'):
-	pass
+def train(dataset, arguments, lang='dutch'):
+    pass
 
-def test(text, arguments, k=5, lang = 'dutch'):
-	if(lang == 'dutch'):
-		return pke_multipartiteRank(text, arguments, n = k,  language = 'dutch')
-	else:
-		return pke_multipartiteRank(text, arguments, n = k,  language = 'english')
+
+def test(text, arguments, k=5, lang='dutch'):
+    if (lang == 'dutch'):
+        return pke_multipartiteRank(text, arguments, n=k, language='dutch')
+    else:
+        return pke_multipartiteRank(text, arguments, n=k, language='english')
 
 
 if __name__ == '__main__':
+    transcript = ' '.join(readCleanTranscript("clean_transcripts_june11.txt", 0))
 
-	transcript = ' '.join(readCleanTranscript("clean_transcripts_june11.txt", 0))
-
-	print(transcript)
-	result = test(transcript, 
-				['1.1', '0.74', 'average'], 
-				k = 20, 
-				lang = 'dutch')
-	print("Keyword predictions:\n", result)
-
+    print(transcript)
+    result = test(transcript,
+                  ['1.1', '0.74', 'average'],
+                  k=20,
+                  lang='dutch')
+    print("Keyword predictions:\n", result)

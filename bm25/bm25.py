@@ -65,34 +65,7 @@ def train(dataset, arguments, lang='dutch'):
         _freq_matrix[word] = freq_matrix.getcol(i).count_nonzero()
 
 
-def remove_redundancy(keywords):
-    """
-    For each keyword in the keywords list, remove redundant keywords with a lower score compared
-    to the original. This is done by comparing keywords which length differs by only one word,
-    and checking for overlap.
-    :param keywords: Ordered list of keywords
-    :return: Filtered list of keywords
-    """
-    k_lens = [len(k.split(' ')) for k in keywords]
-
-    c_idx = 0
-    while c_idx < len(keywords):
-        idx = c_idx + 1
-        while idx < len(keywords):
-            # check that the length of the two keywords differs by only one,
-            # and check whether one is a substring of the other
-            if (k_lens[c_idx] - 1) <= k_lens[idx] <= k_lens[c_idx] + 1 \
-                    and (keywords[c_idx] in keywords[idx] or keywords[idx] in keywords[c_idx]):
-                # remove the lower scored keyword
-                del keywords[idx]
-                del k_lens[idx]
-            idx += 1
-        c_idx += 1
-
-    return keywords
-
-
-def test(text, arguments, k=40, lang='dutch'):
+def test(text, arguments=None, k=40, lang='dutch'):
     """
     :param text: Text that the keywords are extracted from
     :param n: Number of keywords to return. Use -1 to return all of them
@@ -135,8 +108,5 @@ def test(text, arguments, k=40, lang='dutch'):
     # reorder and extract keywords
     scores = sorted(scores, key=lambda x: x[1], reverse=True)
     keywords = [pair[0] for pair in scores]
-
-    # filter keywords by removing redundancy
-    # keywords = remove_redundancy(keywords)
 
     return keywords[0:k] if len(keywords) >= k else keywords

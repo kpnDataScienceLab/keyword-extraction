@@ -20,7 +20,7 @@ logging.basicConfig(level=logging.CRITICAL)
 global time_id
 
 
-def save_results(name, dataset_name, ap_metrics, f1_metrics, k, match_type):
+def save_results(name, dataset_name, f1_metrics, k, match_type):
     """
     Save results or append them to an existing csv file
     """
@@ -29,55 +29,43 @@ def save_results(name, dataset_name, ap_metrics, f1_metrics, k, match_type):
         with open(f'evaluations/evaluations_{dataset_name}.csv', mode='w') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             csv_writer.writerow(
-                ["method"] + list(ap_metrics.keys()) + list(f1_metrics.keys()) + ['k', 'matching_type', 'time'])
+                ["method"] + list(f1_metrics.keys()) + ['k', 'matching_type', 'time'])
             csv_writer.writerow(
-                [name.lower()] + list(ap_metrics.values()) + list(f1_metrics.values()) + [k, match_type, time_id])
+                [name.lower()] + list(f1_metrics.values()) + [k, match_type, time_id])
     else:
         with open(f'evaluations/evaluations_{dataset_name}.csv', mode='a') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             csv_writer.writerow(
-                [name.lower()] + list(ap_metrics.values()) + list(f1_metrics.values()) + [k, match_type, time_id])
+                [name.lower()] + list(f1_metrics.values()) + [k, match_type, time_id])
 
 
-def run_pipeline(name, train, test, arguments,language, k=10, dataset_name='DUC-2001', match_type='strict'):
-    print()
-    print(f'Evaluating {name.upper()} on {dataset_name}')
-    print()
+def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', match_type='strict'):
+    print(f'\nEvaluating {name.upper()} on {dataset_name}\n')
 
     # loading the dataset
     dataset = Dataset(dataset_name)
 
     # train whichever method we're using
     print('Training the model...')
-    train(dataset.texts, arguments=arguments, lang=language)
+    train(dataset.texts, arguments=arguments, lang='english')
 
     print('Running predictions...')
     predictions = []
     for idx, (text, label) in tqdm(enumerate(zip(dataset.texts, dataset.labels)), ncols=80, smoothing=0.15, total=len(dataset)):
         try:
-            predictions.append(test(text, arguments=arguments, k=k, lang=language))
-            with open(f'overlap_comparison_{dataset_name}.csv', mode='a') as csv_file:
-                csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                csv_writer.writerow([idx,name.lower()] + predictions[-1])
-                csv_writer.writerow([idx,'label'] + label)
-
+            predictions.append(test(text, arguments=arguments, k=k, lang='english'))
         except ValueError:
-            tqdm.write(f"[WARNING] Skipping text {idx + 1} due to ValueError.")
+            tqdm.write(traceback.format_exc())
             predictions.append([])
 
     print(f'Calculating scores...')
     results = get_results(dataset.labels, predictions, k=k, match_type=match_type, debug=(not __debug__))
 
-    print(f"AP scores {name}:")
-    for key in results['ap']:
-        print(f"{key}:".rjust(15) + f"{results['ap'][key]:.3f}".rjust(7))
+    print(f"F1 scores for {name.upper()}:")
+    for key in results:
+        print(f"{key}:".rjust(15) + f"{results[key]:.3f}".rjust(7))
 
-    print()
-    print(f"F1 scores {name}:")
-    for key in results['f1']:
-        print(f"{key}:".rjust(15) + f"{results['f1'][key]:.3f}".rjust(7))
-
-    save_results(name, dataset_name, results['ap'], results['f1'], k, match_type)
+    save_results(name, dataset_name, results, k, match_type)
 
 
 if __name__ == "__main__":
@@ -160,7 +148,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dataset",
         type=str,
-        choices=['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD','dutch_sub', 'all'],
+        choices=['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD', 'all'],
         help="Dataset to be used",
         default='DUC-2001'
     )
@@ -173,19 +161,10 @@ if __name__ == "__main__":
         default='strict'
     )
 
-    parser.add_argument(
-        "--lang",
-        type=str,
-        choices=['english', 'dutch'],
-        help="language",
-        default='english'
-    )
-
-
     args = parser.parse_args()
 
     if args.dataset == 'all':
-        datasets = ['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD','dutch_sub']
+        datasets = ['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD']
     else:
         datasets = [args.dataset]
 
@@ -204,8 +183,7 @@ if __name__ == "__main__":
                             'arguments': args.mprank,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype,
-                            'language':args.lang}
+                            'match_type': args.matchtype}
                            )
 
         if args.positionrank is not None:
@@ -215,8 +193,7 @@ if __name__ == "__main__":
                             'arguments': args.positionrank,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype,
-                            'language':args.lang}
+                            'match_type': args.matchtype}
                            )
 
         if args.singlerank is not None:
@@ -226,8 +203,7 @@ if __name__ == "__main__":
                             'arguments': args.singlerank,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype,
-                            'language':args.lang}
+                            'match_type': args.matchtype}
                            )
 
         if args.textrank is not None:
@@ -237,8 +213,7 @@ if __name__ == "__main__":
                             'arguments': args.textrank,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype,
-                            'language':args.lang}
+                            'match_type': args.matchtype}
                            )
 
         if args.tfidf is not None:
@@ -248,8 +223,7 @@ if __name__ == "__main__":
                             'arguments': args.tfidf,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype,
-                            'language':args.lang}
+                            'match_type': args.matchtype}
                            )
 
         if args.bm25 is not None:
@@ -259,8 +233,7 @@ if __name__ == "__main__":
                             'arguments': args.bm25,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype,
-                            'language':args.lang}
+                            'match_type': args.matchtype}
                            )
 
         if args.rake is not None:
@@ -270,8 +243,7 @@ if __name__ == "__main__":
                             'arguments': args.rake,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype,
-                            'language':args.lang}
+                            'match_type': args.matchtype}
                            )
 
         if args.yake is not None:
@@ -281,8 +253,7 @@ if __name__ == "__main__":
                             'arguments': args.yake,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype,
-                            'language':args.lang}
+                            'match_type': args.matchtype}
                            )
 
         if args.graphmodel is not None:
@@ -292,8 +263,7 @@ if __name__ == "__main__":
                             'arguments': args.graphmodel,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype,
-                            'language':args.lang}
+                            'match_type': args.matchtype}
                            )
 
         if args.topicrank is not None:
@@ -303,8 +273,7 @@ if __name__ == "__main__":
                             'arguments': args.topicrank,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype,
-                            'language':args.lang}
+                            'match_type': args.matchtype}
                            )
 
     try:
