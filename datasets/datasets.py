@@ -89,7 +89,7 @@ class Dataset:
                     with open(dirpath+'/'+fname,'r',encoding='latin-1') as f:
                         f.seek(0)
                         self.texts.append(f.read())
-                        self.labels.append([])
+                        self.labels.append([fname])
 
 
     @staticmethod

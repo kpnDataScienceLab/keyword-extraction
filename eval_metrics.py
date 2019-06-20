@@ -165,7 +165,7 @@ def f1(labels, predictions, k=10, match_type='strict'):
     return (2 * precision * recall) / (precision + recall)
 
 
-def f1_ap(labels, predictions, k=10, match_type='strict'):
+def f1_ap(labels, predictions, k=10, match_type='strict', debug=False):
     """
     Computes F1 and average precision scores at the same time for efficiency.
     :param labels: List of ground truth labels, which order doesn't matter.
@@ -189,13 +189,26 @@ def f1_ap(labels, predictions, k=10, match_type='strict'):
 
     score = 0.
     tp = 0.
+    if debug:
+        print('#' * 100)
+        print(f"\n\nLabels:\n\n{labels}")
+        print(f"\n\nCorrect predictions:\n\n[", end='')
+
 
     # count the correct predictions and the total precision
     for i, p in enumerate(predictions):
         # check for relevance and avoid repetitions
         if true_positive_check(p, labels, predictions[:i], match_type):
+            if debug:
+                print(f"'{p}', ", end='')
             tp += 1.0
             score += tp / (i + 1.0)
+
+    if debug:
+        print("\b\b]\n\n")
+
+    print(f"{labels[0].replace('.txt','')} : {' '.join(predictions)}\n")
+
 
     if tp == 0.:
         return 0., 0.
@@ -207,12 +220,16 @@ def f1_ap(labels, predictions, k=10, match_type='strict'):
     recall = tp / tp_fn
 
     ap_score = score / tp_fp
+
+    if ap_score == 2.0:
+        breakpoint()
+
     f1_score = (2 * precision * recall) / (precision + recall)
 
     return ap_score, f1_score
 
 
-def get_results(labels_list, predictions_list, k=10, match_type='strict'):
+def get_results(labels_list, predictions_list, k=10, match_type='strict', debug=False):
     """
     Returns the mean average precision for a series of ranking attempts.
     :param labels_list: A list of lists, where each list contains the ground truth keywords for a text.
@@ -233,7 +250,7 @@ def get_results(labels_list, predictions_list, k=10, match_type='strict'):
         graph_model_config('', '', 'english')
 
     for labels, predictions in tqdm(zip(labels_list, predictions_list), ncols=80, total=total, disable=no_tqdm):
-        ap_score, f1_score = f1_ap(labels, predictions, k, match_type)
+        ap_score, f1_score = f1_ap(labels, predictions, k, match_type, debug)
         ap_scores.append(ap_score)
         f1_scores.append(f1_score)
 

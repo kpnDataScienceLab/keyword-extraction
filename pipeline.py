@@ -10,6 +10,7 @@ from tqdm import tqdm
 from graphmodel import graphmodel
 from datetime import datetime
 import os
+import traceback
 
 # skips useless warnings in the pke methods
 import logging
@@ -38,7 +39,7 @@ def save_results(name, dataset_name, ap_metrics, f1_metrics, k, match_type):
                 [name.lower()] + list(ap_metrics.values()) + list(f1_metrics.values()) + [k, match_type, time_id])
 
 
-def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', match_type='strict'):
+def run_pipeline(name, train, test, arguments,language, k=10, dataset_name='DUC-2001', match_type='strict'):
     print()
     print(f'Evaluating {name.upper()} on {dataset_name}')
     print()
@@ -48,20 +49,24 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', ma
 
     # train whichever method we're using
     print('Training the model...')
-    train(dataset.texts, arguments=arguments, lang='english')
+    train(dataset.texts, arguments=arguments, lang=language)
 
     print('Running predictions...')
     predictions = []
-    for text in tqdm(dataset.texts, ncols=80, smoothing=0.15):
+    for idx, (text, label) in tqdm(enumerate(zip(dataset.texts, dataset.labels)), ncols=80, smoothing=0.15, total=len(dataset)):
         try:
-            predictions.append(test(text, arguments=arguments, k=k, lang='english'))
-        except ValueError as e:
-            print("This text went wrong!\n", text)
-            print(e)
+            predictions.append(test(text, arguments=arguments, k=k, lang=language))
+            with open(f'overlap_comparison_{dataset_name}.csv', mode='a') as csv_file:
+                csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                csv_writer.writerow([idx,name.lower()] + predictions[-1])
+                csv_writer.writerow([idx,'label'] + label)
+
+        except ValueError:
+            tqdm.write(f"[WARNING] Skipping text {idx + 1} due to ValueError.")
             predictions.append([])
 
     print(f'Calculating scores...')
-    results = get_results(dataset.labels, predictions, k=k, match_type=match_type)
+    results = get_results(dataset.labels, predictions, k=k, match_type=match_type, debug=(not __debug__))
 
     print(f"AP scores {name}:")
     for key in results['ap']:
@@ -149,7 +154,7 @@ if __name__ == "__main__":
         "--k",
         type=int,
         help="Cutoff for the keyword extraction method and for the score calculations",
-        default=10
+        default=20
     )
 
     parser.add_argument(
@@ -163,10 +168,19 @@ if __name__ == "__main__":
     parser.add_argument(
         "--matchtype",
         type=str,
-        choices=['strict', 'levenshtein', 'spacy','intersect'],
+        choices=['strict', 'levenshtein', 'spacy', 'intersect'],
         help="Matching function to use when evaluating keyword similarity",
         default='strict'
     )
+
+    parser.add_argument(
+        "--lang",
+        type=str,
+        choices=['english', 'dutch'],
+        help="language",
+        default='english'
+    )
+
 
     args = parser.parse_args()
 
@@ -190,7 +204,8 @@ if __name__ == "__main__":
                             'arguments': args.mprank,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype}
+                            'match_type': args.matchtype,
+                            'language':args.lang}
                            )
 
         if args.positionrank is not None:
@@ -200,7 +215,8 @@ if __name__ == "__main__":
                             'arguments': args.positionrank,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype}
+                            'match_type': args.matchtype,
+                            'language':args.lang}
                            )
 
         if args.singlerank is not None:
@@ -210,7 +226,8 @@ if __name__ == "__main__":
                             'arguments': args.singlerank,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype}
+                            'match_type': args.matchtype,
+                            'language':args.lang}
                            )
 
         if args.textrank is not None:
@@ -220,7 +237,8 @@ if __name__ == "__main__":
                             'arguments': args.textrank,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype}
+                            'match_type': args.matchtype,
+                            'language':args.lang}
                            )
 
         if args.tfidf is not None:
@@ -230,7 +248,8 @@ if __name__ == "__main__":
                             'arguments': args.tfidf,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype}
+                            'match_type': args.matchtype,
+                            'language':args.lang}
                            )
 
         if args.bm25 is not None:
@@ -240,7 +259,8 @@ if __name__ == "__main__":
                             'arguments': args.bm25,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype}
+                            'match_type': args.matchtype,
+                            'language':args.lang}
                            )
 
         if args.rake is not None:
@@ -250,7 +270,8 @@ if __name__ == "__main__":
                             'arguments': args.rake,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype}
+                            'match_type': args.matchtype,
+                            'language':args.lang}
                            )
 
         if args.yake is not None:
@@ -260,7 +281,8 @@ if __name__ == "__main__":
                             'arguments': args.yake,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype}
+                            'match_type': args.matchtype,
+                            'language':args.lang}
                            )
 
         if args.graphmodel is not None:
@@ -270,7 +292,8 @@ if __name__ == "__main__":
                             'arguments': args.graphmodel,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype}
+                            'match_type': args.matchtype,
+                            'language':args.lang}
                            )
 
         if args.topicrank is not None:
@@ -280,7 +303,8 @@ if __name__ == "__main__":
                             'arguments': args.topicrank,
                             'k': args.k,
                             'dataset_name': dataset,
-                            'match_type': args.matchtype}
+                            'match_type': args.matchtype,
+                            'language':args.lang}
                            )
 
     try:
