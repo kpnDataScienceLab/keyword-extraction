@@ -20,7 +20,7 @@ logging.basicConfig(level=logging.CRITICAL)
 global time_id
 
 
-def save_results(name, dataset_name, ap_metrics, f1_metrics, k, match_type):
+def save_results(name, dataset_name, f1_metrics, k, match_type):
     """
     Save results or append them to an existing csv file
     """
@@ -29,20 +29,18 @@ def save_results(name, dataset_name, ap_metrics, f1_metrics, k, match_type):
         with open(f'evaluations/evaluations_{dataset_name}.csv', mode='w') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             csv_writer.writerow(
-                ["method"] + list(ap_metrics.keys()) + list(f1_metrics.keys()) + ['k', 'matching_type', 'time'])
+                ["method"] + list(f1_metrics.keys()) + ['k', 'matching_type', 'time'])
             csv_writer.writerow(
-                [name.lower()] + list(ap_metrics.values()) + list(f1_metrics.values()) + [k, match_type, time_id])
+                [name.lower()] + list(f1_metrics.values()) + [k, match_type, time_id])
     else:
         with open(f'evaluations/evaluations_{dataset_name}.csv', mode='a') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             csv_writer.writerow(
-                [name.lower()] + list(ap_metrics.values()) + list(f1_metrics.values()) + [k, match_type, time_id])
+                [name.lower()] + list(f1_metrics.values()) + [k, match_type, time_id])
 
 
 def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', match_type='strict'):
-    print()
-    print(f'Evaluating {name.upper()} on {dataset_name}')
-    print()
+    print(f'\nEvaluating {name.upper()} on {dataset_name}\n')
 
     # loading the dataset
     dataset = Dataset(dataset_name)
@@ -57,22 +55,17 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', ma
         try:
             predictions.append(test(text, arguments=arguments, k=k, lang='english'))
         except ValueError:
-            tqdm.write(f"[WARNING] Skipping text {idx + 1} due to ValueError.")
+            tqdm.write(traceback.format_exc())
             predictions.append([])
 
     print(f'Calculating scores...')
     results = get_results(dataset.labels, predictions, k=k, match_type=match_type, debug=(not __debug__))
 
-    print(f"AP scores {name}:")
-    for key in results['ap']:
-        print(f"{key}:".rjust(15) + f"{results['ap'][key]:.3f}".rjust(7))
+    print(f"F1 scores for {name.upper()}:")
+    for key in results:
+        print(f"{key}:".rjust(15) + f"{results[key]:.3f}".rjust(7))
 
-    print()
-    print(f"F1 scores {name}:")
-    for key in results['f1']:
-        print(f"{key}:".rjust(15) + f"{results['f1'][key]:.3f}".rjust(7))
-
-    save_results(name, dataset_name, results['ap'], results['f1'], k, match_type)
+    save_results(name, dataset_name, results, k, match_type)
 
 
 if __name__ == "__main__":

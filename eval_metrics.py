@@ -91,49 +91,14 @@ def true_positive_check(keyword, labels, predictions, match_type):
         return spacy_check(keyword, labels) and not spacy_check(keyword, predictions)
 
 
-def average_precision(labels, predictions, k=10, match_type='strict'):
-    """
-    Returns the average precision score between the two provided lists.
-    :param labels: List of ground truth labels, which order doesn't matter.
-    :param predictions: List of predicted keywords. The order here matters.
-    :param k: The cutoff value for computing the average precision. If k==0, all items are used.
-    :param match_type: The type of matching function to use when evaluating keyword similarity.
-    :return: The average precision score for the current list.
-    """
-
-    # make all keywords lowercase
-    labels = [l.lower() for l in labels]
-    predictions = [p.lower() for p in predictions]
-
-    if not labels or not predictions:
-        return 0.0
-
-    if k:
-        predictions = predictions[0:k] if len(predictions) >= k else predictions
-
-    score = 0.
-    tp = 0.
-
-    for i, p in enumerate(predictions):
-        # check for relevance and avoid repetitions
-        if true_positive_check(p, labels, predictions[:i], match_type):
-            tp += 1.0
-            score += tp / (i + 1.0)
-
-    if tp == 0.:
-        return 0.
-
-    tp_fp = min(len(labels), k) if k else len(labels)
-    return score / tp_fp
-
-
-def f1(labels, predictions, k=10, match_type='strict'):
+def f1(labels, predictions, k=10, match_type='strict', debug=False):
     """
     Returns the F1 score between the two provided lists.
     :param labels: List of ground truth labels, which order doesn't matter.
     :param predictions: List of predicted keywords. The order here matters.
     :param k: The cutoff value for computing the average precision. If k==0, all items are used.
     :param match_type: The type of matching function to use when evaluating keyword similarity.
+    :param debug: Whether to print the labels and correct predictions for each text.
     :return: The F1 score for the current list.
     """
 
@@ -149,10 +114,22 @@ def f1(labels, predictions, k=10, match_type='strict'):
 
     tp = 0.
 
+    if debug:
+        print('#' * 100)
+        print(f"\n\nLabels:\n\n{labels}")
+        print(f"\n\nCorrect predictions:\n\n[", end='')
+
     for i, p in enumerate(predictions):
         # check for relevance and avoid repetitions
         if true_positive_check(p, labels, predictions[:i], match_type):
+
+            if debug:
+                print(f"'{p}', ", end='')
+
             tp += 1.0
+
+    if debug:
+        print("\b\b]\n\n")
 
     tp_fp = min(len(labels), k) if k else len(labels)
     tp_fn = len(predictions)
@@ -166,99 +143,26 @@ def f1(labels, predictions, k=10, match_type='strict'):
     return (2 * precision * recall) / (precision + recall)
 
 
-def f1_ap(labels, predictions, k=10, match_type='strict', debug=False):
-    """
-    Computes F1 and average precision scores at the same time for efficiency.
-    :param labels: List of ground truth labels, which order doesn't matter.
-    :param predictions: List of predicted keywords. The order here matters.
-    :param k: The cutoff value for computing the average precision. If k==0, all items are used.
-    :param match_type: The type of matching function to use when evaluating keyword similarity.
-    :return: A tuple of average precision and F1 score for the current list.
-    """
-
-    # make all keywords lowercase
-    labels = [l.lower() for l in labels]
-    predictions = [p.lower() for p in predictions]
-
-    # return 0 if there are no labels or predictions
-    if not labels or not predictions:
-        return 0., 0.
-
-    # limit the length of the list of predictions according to k
-    if k:
-        predictions = predictions[0:k] if len(predictions) >= k else predictions
-
-    score = 0.
-    tp = 0.
-
-    if debug:
-        print('#' * 100)
-        print(f"\n\nLabels:\n\n{labels}")
-        print(f"\n\nCorrect predictions:\n\n[", end='')
-
-    # count the correct predictions and the total precision
-    for i, p in enumerate(predictions):
-        # check for relevance and avoid repetitions
-        if true_positive_check(p, labels, predictions[:i], match_type):
-            if debug:
-                print(f"'{p}', ", end='')
-            tp += 1.0
-            score += tp / (i + 1.0)
-
-    if debug:
-        print("\b\b]\n\n")
-
-    if tp == 0.:
-        return 0., 0.
-
-    tp_fp = min(len(labels), k) if k else len(labels)
-    tp_fn = len(predictions)
-
-    precision = tp / tp_fp
-    recall = tp / tp_fn
-
-    ap_score = score / tp_fp
-
-    f1_score = (2 * precision * recall) / (precision + recall)
-
-    return ap_score, f1_score
-
-
 def get_results(labels_list, predictions_list, k=10, match_type='strict', debug=False):
     """
-    Returns the mean average precision for a series of ranking attempts.
+    Returns the mean F1 score for a series of ranking attempts.
     :param labels_list: A list of lists, where each list contains the ground truth keywords for a text.
     :param predictions_list: A list of lists, where each list contains the predicted keywords for a text.
     :param k: The cutoff value for computing the average precision. With k==0, all items are used.
     :param match_type: The type of matching function to use when evaluating keyword similarity.
-    :return: A dictionary with 5 statistics from the list of average precision scores
+    :param debug: Whether to print the labels and correct predictions for each text.
+    :return: A dictionary with 5 statistics from the list of f1 scores
     """
-    ap_scores = []
     f1_scores = []
 
-    # tqdm parameters
-    total = len(predictions_list)
-    no_tqdm = (match_type != 'spacy')
+    for labels, predictions in zip(labels_list, predictions_list):
+        f1_scores.append(f1(labels, predictions, k, match_type, debug))
 
-    # train the spacy model only once
-    if match_type == 'spacy':
-        graph_model_config('', '', 'english')
+    results = {'f1_mean': np.mean(f1_scores),
+               'f1_std': np.std(f1_scores),
+               'f1_min': np.min(f1_scores),
+               'f1_max': np.max(f1_scores),
+               'f1_median': np.median(f1_scores)}
 
-    for labels, predictions in tqdm(zip(labels_list, predictions_list), ncols=80, total=total, disable=no_tqdm):
-        ap_score, f1_score = f1_ap(labels, predictions, k, match_type, debug)
-        ap_scores.append(ap_score)
-        f1_scores.append(f1_score)
+    return results
 
-    ap_results = {'ap_mean': np.mean(ap_scores),
-                  'ap_std': np.std(ap_scores),
-                  'ap_min': np.min(ap_scores),
-                  'ap_max': np.max(ap_scores),
-                  'ap_median': np.median(ap_scores)}
-
-    f1_results = {'f1_mean': np.mean(f1_scores),
-                  'f1_std': np.std(f1_scores),
-                  'f1_min': np.min(f1_scores),
-                  'f1_max': np.max(f1_scores),
-                  'f1_median': np.median(f1_scores)}
-
-    return {'f1': f1_results, 'ap': ap_results}
