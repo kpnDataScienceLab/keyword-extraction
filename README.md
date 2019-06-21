@@ -32,7 +32,7 @@ information on the supported datasets and using custom ones.
 * The `--matchtype` flag takes the type of string comparison to be used
 performing any comparison between keyphrases (e.g. during the [evaluation](utils)).
 The possibilities are:
-    * `strict`: a simple string equality comparison
+    * `strict` (default): a simple string equality comparison
     * `levenshtein`: a comparison that requires the two keyphrases
     to be at a [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance)
     of less than 1 from each other
@@ -48,14 +48,21 @@ run.
 All methods will then be tested sequentially and the results will be saved
 as CSV files in `evaluations/`
 
+For instance, to run all models on all datasets using the `strict` matching
+type, and a `k` of 20, use:
+
+```
+$ python pipeline.py --mprank --positionrank --singlerank --textrank --topicrank --yake --bm25 --tfidf --rake --graphmodel --ensemble --dataset all
+```
+
 ## Adding models
 
-In order to add any model to the current pipeline, two steps are required:
+In order to add any model to the current pipeline, three steps are required:
 
 1. Add that model as a new module in [models](models), making sure to stick
 to the requirements mentioned in that folder.
 
-2. Import the module from `pipeline.py`.
+2. In `pipeline.py`, import that module from the models folder.
 
 3. Add the relevant arguments to `pipeline.py` by including an `argparse` argument
 along with the others in the form:

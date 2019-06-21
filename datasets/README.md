@@ -18,9 +18,9 @@ Watch out, it will download around 11 GB of data.
 ## Usage
 
 In order to use the Dataset class, import it by giving it as its argument
-the name of the dataset you want to use. For now, the only ones supported
-are `500N-KPCrowd` (500 samples), `DUC-2001` (308 samples), and `Inspec`
-(2000 samples).
+the name of the dataset you want to use, either from the
+[available datasets](#available-datasets) or by using the path of a
+[custom dataset](#custom-datasets).
 
 Example usage from the root folder:
 
