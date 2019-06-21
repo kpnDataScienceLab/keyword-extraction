@@ -30,7 +30,8 @@ uses all of the listed datasets. Check [datasets](datasets) for more
 information on the supported datasets and using custom ones.
 
 * The `--matchtype` flag takes the type of string comparison to be used
-performing any comparison between keyphrases (e.g. during the [evaluation](utils)).
+performing any comparison between keyphrases (e.g. during the
+[evaluation](utils/eval_metrics.py)).
 The possibilities are:
     * `strict` (default): a simple string equality comparison
     * `levenshtein`: a comparison that requires the two keyphrases
@@ -55,7 +56,19 @@ type, and a `k` of 20, use:
 $ python pipeline.py --mprank --positionrank --singlerank --textrank --topicrank --yake --bm25 --tfidf --rake --graphmodel --ensemble --dataset all
 ```
 
-## Adding models
+### Debug Mode
+
+The program may be run in debug mode by using:
+
+```
+$ python -O pipeline.py [args]
+```
+
+With any relevant argument instead of `[args]`. For each processed text,
+this will print both the reference keyphrases and the predicted keyphrases
+which were counted as a successful match (i.e. the true positives).
+
+## Adding Models
 
 In order to add any model to the current pipeline, three steps are required:
 

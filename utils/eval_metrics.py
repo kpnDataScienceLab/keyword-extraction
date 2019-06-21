@@ -1,5 +1,5 @@
 import numpy as np
-from models.graphmodel import get_model
+from models.graphmodel.graphmodel import get_model
 
 optim_dict = {}
 
