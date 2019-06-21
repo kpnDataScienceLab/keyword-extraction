@@ -1,7 +1,5 @@
 import numpy as np
-from graphmodel.graphmodel import train as graph_model_config
-from graphmodel.graphmodel import get_model
-from tqdm import tqdm
+from models.graphmodel import get_model
 
 optim_dict = {}
 

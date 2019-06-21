@@ -1,5 +1,6 @@
-from tfidf import tfidf
-from git_pke import pke_multipartiterank, pke_topicrank
+from models.tfidf import tfidf
+from models.git_pke import pke_topicrank
+from models.git_pke import pke_multipartiterank
 from tqdm import tqdm
 from eval_metrics import intersect
 import traceback

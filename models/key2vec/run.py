@@ -1,4 +1,4 @@
-from key2vec import key2vec
+from models.key2vec import key2vec
 import pandas as pd
 
 doc_id = 10
