@@ -1,29 +1,32 @@
-import argparse
 import json
 import re
 import os
 import xml.etree.ElementTree as ElementTree
+import pandas as pd
 
 
 class Dataset:
 
     def __init__(self, ds_name='500N-KPCrowd'):
-        # make sure the dataset is supported (mainly because of the label loading)
-        assert ds_name in ['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD','dutch_sub']
-
         self.ds_name = ds_name
-        self.folder_name = os.path.dirname(os.path.realpath(__file__)) + '/ake-datasets/datasets/'
-        self.ds_folder = self.folder_name + self.ds_name
         self.texts = []
         self.labels = []
-        self.build_dataset()
+
+        if ds_name.endswith('.csv'):
+            # assume ds_name is the path of the dataset file from the dataset folder
+            self.build_csv_dataset(ds_path=ds_name)
+        else:
+            # load the dataset from the ake-datasets repository that was cloned in the datasets folder
+            self.ake_folder_name = os.path.dirname(os.path.realpath(__file__)) + '/ake-datasets/datasets/'
+            self.ake_ds_folder = self.ake_folder_name + self.ds_name
+            self.build_ake_dataset()
 
     def __len__(self):
         return len(self.texts)
 
-    def load_labels(self):
+    def load_ake_labels(self):
 
-        labels_path = self.ds_folder + '/references/'
+        labels_path = self.ake_ds_folder + '/references/'
 
         labels = {}
         label_files = []
@@ -31,17 +34,18 @@ class Dataset:
             label_files = ['test.reader.json']
         if self.ds_name == '500N-KPCrowd':
             label_files = ['test.reader.json', 'train.reader.json']
-        if self.ds_name == 'DUC-2001':
+        elif self.ds_name == 'DUC-2001':
             label_files = ['test.reader.json']
-        if self.ds_name == 'Inspec':
+        elif self.ds_name == 'Inspec':
             label_files = ['dev.contr.json', 'test.contr.json', 'train.contr.json']
-        if self.ds_name == 'SemEval-2010':
-            print("[WARNING] SemEval-2010's labels are stemmed!")
-            label_files = ['test.combined.stem.json', 'train.combined.stem.json']
-        if self.ds_name in ['NUS', 'WWW']:
+        elif self.ds_name in ['NUS', 'WWW']:
             label_files = ['test.combined.json']
-        if self.ds_name == 'KDD':
+        elif self.ds_name == 'KDD':
             label_files = ['test.author.json']
+        else:
+            raise ValueError('This dataset doesn\'t exist in the ake-datasets repository. Refer to '
+                             'https://github.com/boudinfl/ake-datasets/tree/master/datasets to know which '
+                             'datasets to use.')
 
         for lfile in label_files:
             # load unstemmed labels
@@ -51,7 +55,7 @@ class Dataset:
 
         return labels
 
-    def build_dataset(self):
+    def build_ake_dataset(self):
         """
         Processes all xml files in a folder from the ake-datasets colection and returns a dictionary
         with a text for each file
@@ -59,10 +63,10 @@ class Dataset:
         """
 
         # load labels in order to return them matched with the texts
-        labels_dict = self.load_labels()
+        labels_dict = self.load_ake_labels()
 
         # loop through all documents in the training set
-        for (dirpath, dirnames, filenames) in os.walk(self.ds_folder):
+        for (dirpath, dirnames, filenames) in os.walk(self.ake_ds_folder):
 
             # names of folders in the ake-datasets collection which contain data
             data_folders = ['train', 'dev', 'test']
@@ -91,6 +95,17 @@ class Dataset:
                         self.texts.append(f.read())
                         self.labels.append([fname])
 
+
+    def build_csv_dataset(self, ds_path):
+        full_path = os.path.dirname(os.path.realpath(__file__)) + '/' + ds_path
+        dataframe = pd.read_csv(full_path)
+
+        for index, row in dataframe.iterrows():
+            if type(row['text']) is str:
+                self.texts.append(row['fixed_text'])
+
+                # the labels in the labels column should be separated by the | character
+                self.labels.append('|'.split(row['labels']))
 
     @staticmethod
     def clean_text(text):
@@ -136,22 +151,5 @@ class Dataset:
         return ' '.join([tok[0].text for tok in tokens])
 
     def __iter__(self):
-        for text in self.texts:
-            yield text
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument(
-        "--ds_name",
-        type=str,
-        default='500N-KPCrowd',
-        choices=['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD'],
-        help="Name of the dataset to use"
-    )
-
-    flags = parser.parse_args()
-    ds = Dataset()
-    t, l = ds.get_texts()
-    breakpoint()
+        for text, labels in zip(self.texts, self.labels):
+            yield text, labels

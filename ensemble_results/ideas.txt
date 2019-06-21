@@ -1,2 +1,0 @@
-try to get first 3 keywords for each approach
-try to use a softening constant on the sum of the scores

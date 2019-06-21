@@ -2,6 +2,7 @@ from tfidf import tfidf
 from bm25 import bm25
 from rake import rake
 from git_pke import pke_multipartiterank, pke_positionrank, pke_singlerank, pke_textrank, pke_topicrank, pke_yake
+from ensemble import ensemble
 from datasets.datasets import Dataset
 from eval_metrics import get_results
 import argparse
@@ -24,6 +25,12 @@ def save_results(name, dataset_name, f1_metrics, k, match_type):
     """
     Save results or append them to an existing csv file
     """
+
+    # create the destination folder if it doesn't exist
+    if not os.path.exists('evaluations'):
+        os.mkdir('evaluations')
+        print(f"Created evaluations folder")
+
     # if file doesn't exist, initialize it with the right columns
     if not os.path.isfile(f'evaluations/evaluations_{dataset_name}.csv'):
         with open(f'evaluations/evaluations_{dataset_name}.csv', mode='w') as csv_file:
@@ -32,14 +39,18 @@ def save_results(name, dataset_name, f1_metrics, k, match_type):
                 ["method"] + list(f1_metrics.keys()) + ['k', 'matching_type', 'time'])
             csv_writer.writerow(
                 [name.lower()] + list(f1_metrics.values()) + [k, match_type, time_id])
+
+    # the file already exists, so just append the results
     else:
         with open(f'evaluations/evaluations_{dataset_name}.csv', mode='a') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             csv_writer.writerow(
                 [name.lower()] + list(f1_metrics.values()) + [k, match_type, time_id])
 
+    print("Saved results")
 
-def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', match_type='strict'):
+
+def run_pipeline(name, train_function, test_function, arguments, k=10, dataset_name='DUC-2001', match_type='strict'):
     print(f'\nEvaluating {name.upper()} on {dataset_name}\n')
 
     # loading the dataset
@@ -47,13 +58,14 @@ def run_pipeline(name, train, test, arguments, k=10, dataset_name='DUC-2001', ma
 
     # train whichever method we're using
     print('Training the model...')
-    train(dataset.texts, arguments=arguments, lang='english')
+    train_function(dataset.texts, arguments=arguments, lang='english')
 
     print('Running predictions...')
     predictions = []
-    for idx, (text, label) in tqdm(enumerate(zip(dataset.texts, dataset.labels)), ncols=80, smoothing=0.15, total=len(dataset)):
+    for idx, (text, label) in tqdm(enumerate(zip(dataset.texts, dataset.labels)), ncols=80, smoothing=0.15,
+                                   total=len(dataset)):
         try:
-            predictions.append(test(text, arguments=arguments, k=k, lang='english'))
+            predictions.append(test_function(text, arguments=arguments, k=k, lang='english'))
         except ValueError:
             tqdm.write(traceback.format_exc())
             predictions.append([])
@@ -139,6 +151,12 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        "--ensemble",
+        help="Use the ensemble model",
+        nargs='*'
+    )
+
+    parser.add_argument(
         "--k",
         type=int,
         help="Cutoff for the keyword extraction method and for the score calculations",
@@ -164,22 +182,19 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.dataset == 'all':
-        datasets = ['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD']
+        datasets = ['500N-KPCrowd', 'DUC-2001', 'Inspec', 'NUS', 'WWW', 'KDD']
     else:
         datasets = [args.dataset]
 
     for dataset in datasets:
+
         if args.mprank is not None:
             if len(args.mprank) < 3:
                 args.mprank = ['1.1', '0.74', 'average']
-                # print("MPRank: Alpha, threshold and method parameters not given.",
-                #       "\nUsing default values: ", args.mprank)
-            else:
-                # print("MPRank. Using arguments: ", args.mprank)
-                pass
+
             methods.append({'name': 'MultiPartiteRank',
-                            'train': pke_multipartiterank.train,
-                            'test': pke_multipartiterank.test,
+                            'train_function': pke_multipartiterank.train,
+                            'test_function': pke_multipartiterank.test,
                             'arguments': args.mprank,
                             'k': args.k,
                             'dataset_name': dataset,
@@ -188,8 +203,8 @@ if __name__ == "__main__":
 
         if args.positionrank is not None:
             methods.append({'name': 'PositionRank',
-                            'train': pke_positionrank.train,
-                            'test': pke_positionrank.test,
+                            'train_function': pke_positionrank.train,
+                            'test_function': pke_positionrank.test,
                             'arguments': args.positionrank,
                             'k': args.k,
                             'dataset_name': dataset,
@@ -198,8 +213,8 @@ if __name__ == "__main__":
 
         if args.singlerank is not None:
             methods.append({'name': 'SingleRank',
-                            'train': pke_singlerank.train,
-                            'test': pke_singlerank.test,
+                            'train_function': pke_singlerank.train,
+                            'test_function': pke_singlerank.test,
                             'arguments': args.singlerank,
                             'k': args.k,
                             'dataset_name': dataset,
@@ -208,8 +223,8 @@ if __name__ == "__main__":
 
         if args.textrank is not None:
             methods.append({'name': 'TextRank',
-                            'train': pke_textrank.train,
-                            'test': pke_textrank.test,
+                            'train_function': pke_textrank.train,
+                            'test_function': pke_textrank.test,
                             'arguments': args.textrank,
                             'k': args.k,
                             'dataset_name': dataset,
@@ -218,8 +233,8 @@ if __name__ == "__main__":
 
         if args.tfidf is not None:
             methods.append({'name': 'tfidf',
-                            'train': tfidf.train,
-                            'test': tfidf.test,
+                            'train_function': tfidf.train,
+                            'test_function': tfidf.test,
                             'arguments': args.tfidf,
                             'k': args.k,
                             'dataset_name': dataset,
@@ -228,8 +243,8 @@ if __name__ == "__main__":
 
         if args.bm25 is not None:
             methods.append({'name': 'bm25',
-                            'train': bm25.train,
-                            'test': bm25.test,
+                            'train_function': bm25.train,
+                            'test_function': bm25.test,
                             'arguments': args.bm25,
                             'k': args.k,
                             'dataset_name': dataset,
@@ -238,8 +253,8 @@ if __name__ == "__main__":
 
         if args.rake is not None:
             methods.append({'name': 'rake',
-                            'train': rake.train,
-                            'test': rake.test,
+                            'train_function': rake.train,
+                            'test_function': rake.test,
                             'arguments': args.rake,
                             'k': args.k,
                             'dataset_name': dataset,
@@ -248,8 +263,8 @@ if __name__ == "__main__":
 
         if args.yake is not None:
             methods.append({'name': 'yake',
-                            'train': pke_yake.train,
-                            'test': pke_yake.test,
+                            'train_function': pke_yake.train,
+                            'test_function': pke_yake.test,
                             'arguments': args.yake,
                             'k': args.k,
                             'dataset_name': dataset,
@@ -258,8 +273,8 @@ if __name__ == "__main__":
 
         if args.graphmodel is not None:
             methods.append({'name': 'graphmodel',
-                            'train': graphmodel.train,
-                            'test': graphmodel.test,
+                            'train_function': graphmodel.train,
+                            'test_function': graphmodel.test,
                             'arguments': args.graphmodel,
                             'k': args.k,
                             'dataset_name': dataset,
@@ -268,9 +283,19 @@ if __name__ == "__main__":
 
         if args.topicrank is not None:
             methods.append({'name': 'TopicRank',
-                            'train': pke_topicrank.train,
-                            'test': pke_topicrank.test,
+                            'train_function': pke_topicrank.train,
+                            'test_function': pke_topicrank.test,
                             'arguments': args.topicrank,
+                            'k': args.k,
+                            'dataset_name': dataset,
+                            'match_type': args.matchtype}
+                           )
+
+        if args.ensemble is not None:
+            methods.append({'name': 'Ensemble',
+                            'train_function': ensemble.train,
+                            'test_function': ensemble.test,
+                            'arguments': args.ensemble,
                             'k': args.k,
                             'dataset_name': dataset,
                             'match_type': args.matchtype}
@@ -280,5 +305,5 @@ if __name__ == "__main__":
         for m in methods:
             run_pipeline(**m)
     except KeyboardInterrupt:
-        print("\nTerminating...")
+        print("\n[KeyboardInterrupt] Terminating...")
         quit()

@@ -1,0 +1,1 @@
+Make example csv, with a 'text' column and a 'labels' column. In the 'labels' column, use keyphrases separated by |.
