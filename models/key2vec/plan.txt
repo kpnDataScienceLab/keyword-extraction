@@ -11,6 +11,8 @@ Candidate scoring
 	5. Compute cosine similarity between all candidate words and theme vector.
 	6. Rescale scores from 0 to 1.
 
+############## DONE UNTIL HERE ##############
+
 Candidate ranking
 	
 	7. Construct an adjacency matrix. The nodes are the candidate keywords. Edges are created if they co-occur in a window size of 5.

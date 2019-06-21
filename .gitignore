@@ -1,6 +1,8 @@
 # Project related
 evaluations/
 datasets/ake-datasets/
+models/key2vec/embeddings/
+additional_resources/fasttext/embeddings/
 
 # PyCharm
 .idea/
