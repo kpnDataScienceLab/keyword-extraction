@@ -3,6 +3,11 @@ import nltk
 import string
 from pke import compute_document_frequency
 
+"""
+Author: Arvid Lindstrom,
+June 2019.
+Arvid.Lindstrom@gmail.com
+"""
 
 def returnKeywords(topNkeyphrases):
 	output = []
@@ -17,11 +22,16 @@ def pke_singleRank(text, n = 5, language = 'nl'):
 
 	POS = {'NOUN', 'PROPN', 'ADJ'}
 
+	if (len(arguments) == 0):
+		window = 10
+	else:
+		window = int(arguments[0])
+
 	singleRank_extractor.load_document(input = text,
 										language = language,
 									normalization = None)
 	singleRank_extractor.candidate_selection(pos = POS)
-	singleRank_extractor.candidate_weighting(window = 10,
+	singleRank_extractor.candidate_weighting(window = window, # 10
 											pos = POS)
 	keyphrases = singleRank_extractor.get_n_best(n = n)
 	return returnKeywords(keyphrases)
@@ -30,9 +40,8 @@ def pke_singleRank(text, n = 5, language = 'nl'):
 def train(dataset,arguments,lang='dutch'):
 	pass
 
-# [tested]
 def test(text, arguments, k=5, lang = 'dutch'):
 	if(lang == 'dutch'):
-		return pke_singleRank(text, n = k, language = 'nl')
+		return pke_singleRank(text, arguments, n = k, language = 'nl')
 	else:
-		return pke_singleRank(text, n = k, language = 'en')
+		return pke_singleRank(text, arguments, n = k, language = 'en')

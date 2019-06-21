@@ -5,16 +5,25 @@ import argparse
 from spacy.lang.nl.stop_words import STOP_WORDS
 
 """
+Author: Arvid Lindstrom, 
+June 2019.
+Arvid.Lindstrom@gmail.com
+"""
+
+"""
 
 File candidate keywords works as follows:
+
+# 0. 
 from preprocessing.candidatekeywords import candidateKeywords
 
 # 1. 
-dutch_nlp = spacy.load("nl_core_news_sm")
+dutch_nlp = spacy.load("nl_core_news_sm") 
+.. OR
 english_nlp = spacy.load("en_core_web_sm")
 
 # 2. 
-index = 42
+index = 42 <-- # just some index of a transcript
 input_path = "clean_week_1_transcripts.txt"
 candidates = candidateKeywords(index, dutch_nlp, input_path,
 								useExistFilter = True, k = 5)
@@ -25,11 +34,6 @@ def isNounChunkInText(chunk_candidate, raw_text):
 	return chunk_candidate in raw_text
 	
 def filterNounChunks(nlp_document, raw_text, useExistFilter = True):
-	
-	# for token in nlp_document:
-	# 	print(token.text, token.pos_, token.dep_, ' <---- ' , token.head.text, token.head.pos_,
-	# 		[child for child in token.children])
-	# print("-------------RESULT------------")
 
 	noun_chunks = []
 	current_chunk = ""
@@ -140,7 +144,8 @@ def candidateKeywords(tranIndex, dutch_nlp,
 	cleanTranscript = ' '.join(readCleanTranscript(input_filename, tranIndex))
 	candidates = []
 	
-	# Process all sentences as one big text
+	# Process all sentences as one big text. At this point
+	# cleanTranscript should be a string of proper sentences.
 	doc = dutch_nlp(cleanTranscript)
 	# Find entities, noun-phrases and simple nouns
 	candidates += filterEntities(doc)
@@ -172,7 +177,6 @@ def finalFilter(candidate_list, k = 5):
 	# Remove keywords with only 1 letter
 	candidate_list = remove1letterWords(candidate_list)
 	print("After removing \"1 letters\": ", len(candidate_list))
-
 
 	return candidate_list
 
@@ -216,7 +220,10 @@ def main():
 	for key in keyphrases:
 		print(key)
 
-	# joseph = "Voor het grote huis van mijn grote ouders ligt een kleine hond"
+
 
 if __name__ == '__main__':
+
+	# Debugging for non dutch speakers..
+	# joseph = "Voor het grote huis van mijn grote ouders ligt een kleine hond"	
 	main()

@@ -1,8 +1,15 @@
 import pandas as pd 
 import spacy 
+import argparse
+import sys
 
 """
-This file exists to ensure that the 
+Author: Arvid Lindstrom,
+June 2019.
+Arvid.Lindstrom@gmail.com
+"""
+"""
+This file exists to ensure that the TV-Data
 text is processed in a format that 
 preserves sentence structure. This is 
 required on the TV-data since the 
@@ -20,8 +27,13 @@ def csvToTranscripts(filename = 'aligned_epg_transcriptions_npo1_npo2.csv'):
 	data = pd.read_csv(filename)
 
 	# get list of texts
-	texts = data['text']
-	channels = data['index'] #<-- can be used to see which TV show text came from 
+	try:
+		texts = data['text']
+		channels = data['index'] #<-- can be used to see which TV show text came from 
+	except KeyError:
+		print("Error: Function csvToTranscripts(...), The TV-data .csv failed to " +\
+			"contain either of columns: text | index .")
+		sys.exit("Exiting cleandata.py from function csvToTranscripts().")
 
 	return texts, channels
 
@@ -144,8 +156,15 @@ def readCleanTranscript(input_path, transcriptIdx):
 
 	
 
+"""
+Function saveTranscriptsToFile takes a csv file as 
+input and produces a cleaned up version where sentences
+appear properly stitched together in a coherent manner.
 
-
+input_path : file path of the raw TV transcripts
+output_path : desired path for the output file, will be 
+	in the form of a .txt file
+"""
 def saveTranscriptsToFile(input_path, output_path):
 
 	file = open(output_path, "w+")
@@ -168,21 +187,20 @@ def saveTranscriptsToFile(input_path, output_path):
 
 if __name__ == '__main__':
 
-	output_filename = "clean_transcripts_june11.txt"
-	input_path = "../transcriptions.csv"
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--input', default="", type=str, help='Path to input .csv of TV-data')
+	parser.add_argument('--output', default="", type=str, help='Path to desired output.txt file')
+	ARGS = parser.parse_args()	
 
-	# ------------- Uncomment this line to generate and save the clean transcripts
-	# saveTranscriptsToFile(input_path, output_filename)
-	# ----------------------------------------------------------------------------
-	
-	transcripts, _ = csvToTranscripts(input_path)
+	if(ARGS.input == ""):
+		print("Please enter a valid input path for the .csv file.")
+		sys.exit("Exiting from cleandata.py")
+	if(ARGS.output == ""):
+		print("Please enter a valid output path for the desired output.txt file.")
+		sys.exit("Exiting from cleandata.py")
 
-	# This is an example of how to access transcripts from now on. 
-	# Note that this is NOT the proposed candidate keywords, this is the 
-	# data used by spacy to generate those keywords. 
-	cleanTranscript4 = readCleanTranscript(output_filename, 4)
-	
-	print("Input transcript ----------------------\n")
-	print(transcripts[4])
-	print("\nCleaned up transcript -----------------\n")
-	print(cleanTranscript4)
+	try:
+		saveTranscriptsToFile(ARGS.input, ARGS.output)
+	except FileNotFoundError:
+		print("Error: Entered input path >" + ARGS.input + "< could not be found.")
+		sys.exit("Exiting from cleandata.py")
