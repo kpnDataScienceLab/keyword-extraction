@@ -5,7 +5,7 @@ from models.git_pke import pke_textrank, pke_topicrank
 from models.git_pke import pke_singlerank, pke_multipartiterank, pke_positionrank, pke_yake
 from models.ensemble import ensemble
 from datasets.datasets import Dataset
-from eval_metrics import get_results
+from utils.eval_metrics import get_results
 import argparse
 import csv
 from tqdm import tqdm
