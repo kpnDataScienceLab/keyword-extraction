@@ -9,7 +9,7 @@ class Dataset:
 
     def __init__(self, ds_name='500N-KPCrowd'):
         # make sure the dataset is supported (mainly because of the label loading)
-        assert ds_name in ['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD']
+        assert ds_name in ['500N-KPCrowd', 'DUC-2001', 'Inspec', 'SemEval-2010', 'NUS', 'WWW', 'KDD','dutch_sub']
 
         self.ds_name = ds_name
         self.folder_name = os.path.dirname(os.path.realpath(__file__)) + '/ake-datasets/datasets/'
@@ -26,6 +26,9 @@ class Dataset:
         labels_path = self.ds_folder + '/references/'
 
         labels = {}
+        label_files = []
+        if self.ds_name == 'dutch_sub':
+            label_files = ['test.reader.json']
         if self.ds_name == '500N-KPCrowd':
             label_files = ['test.reader.json', 'train.reader.json']
         if self.ds_name == 'DUC-2001':
@@ -71,16 +74,23 @@ class Dataset:
             for fname in filenames:
 
                 # check that it's an xml file
-                if not fname.endswith('.xml'):
-                    continue
+                if fname.endswith('.xml'):
+                    
 
-                text = self.parse_xml(dirpath + '/' + fname)
-                text = self.clean_text(text)
+                    text = self.parse_xml(dirpath + '/' + fname)
+                    text = self.clean_text(text)
 
-                ftitle = re.sub(r'.xml', '', fname)
-                if ftitle in labels_dict:
-                    self.texts.append(text)
-                    self.labels.append([keyword for sublist in labels_dict[ftitle] for keyword in sublist])
+                    ftitle = re.sub(r'.xml', '', fname)
+                    if ftitle in labels_dict:
+                        self.texts.append(text)
+                        self.labels.append([keyword for sublist in labels_dict[ftitle] for keyword in sublist])
+                
+                if fname.endswith('.txt'):
+                    with open(dirpath+'/'+fname,'r',encoding='latin-1') as f:
+                        f.seek(0)
+                        self.texts.append(f.read())
+                        self.labels.append([fname])
+
 
     @staticmethod
     def clean_text(text):

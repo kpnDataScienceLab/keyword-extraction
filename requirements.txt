@@ -8,8 +8,6 @@ chardet==3.0.4
 cymem==2.0.2
 decorator==4.4.0
 docutils==0.14
-en-core-web-sm==2.1.0
-en-vectors-web-lg==2.1.0
 future==0.17.1
 gensim==3.7.3
 idna==2.8
@@ -21,7 +19,6 @@ networkx==2.3
 nltk==3.4.3
 numpy==1.16.4
 pandas==0.24.2
-pke==1.8
 pkg-resources==0.0.0
 plac==0.9.6
 preshed==2.0.1

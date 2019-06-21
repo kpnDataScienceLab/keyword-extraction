@@ -139,7 +139,7 @@ def train(dataset, arguments, lang='dutch'):
     global _model
     if lang == 'dutch':
         from spacy.lang.nl.stop_words import STOP_WORDS
-        model_data_path = "../39.zip"
+        model_data_path = "39.zip"
         with zipfile.ZipFile(model_data_path, "r") as archive:
             stream = archive.open("model.txt")
 
