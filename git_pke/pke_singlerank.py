@@ -16,7 +16,7 @@ def returnKeywords(topNkeyphrases):
 	return output
 
 # SingleRank [tested]
-def pke_singleRank(text, n = 5, language = 'nl'):
+def pke_singleRank(text, arguments, n = 5, language = 'nl'):
 
 	singleRank_extractor = pke.unsupervised.SingleRank()
 
