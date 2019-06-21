@@ -1,6 +1,6 @@
 # Keyword Extraction Project
 
-### Requirements
+## Requirements
 
 Joseph show us how it's done ;) for instance:
 
@@ -8,7 +8,7 @@ Joseph show us how it's done ;) for instance:
 $ python set_me_up_inside.sh
 ```
 
-### Usage
+## Usage
 
 To test any of the implemented methods against any of the datasets, run:
 
@@ -48,7 +48,7 @@ run.
 All methods will then be tested sequentially and the results will be saved
 as CSV files in `evaluations/`
 
-### Adding models
+## Adding models
 
 In order to add any model to the current pipeline, two steps are required:
 

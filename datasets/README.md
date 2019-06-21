@@ -1,6 +1,6 @@
 # Datasets
 
-### Requirements
+## Requirements
 
 NOTE: this should automatically be done by running setup script in
 the [root](..) folder.
@@ -15,7 +15,7 @@ $ git clone https://github.com/boudinfl/ake-datasets.git
 
 Watch out, it will download around 11 GB of data.
 
-### Usage
+## Usage
 
 In order to use the Dataset class, import it by giving it as its argument
 the name of the dataset you want to use. For now, the only ones supported
@@ -37,7 +37,7 @@ print(ds.texts[10])
 print(ds.labels[10])
 ```
 
-### Available Datasets
+## Available Datasets
 
 Currently, all datasets in this table are available.
 
@@ -50,8 +50,33 @@ Currently, all datasets in this table are available.
 | DUC-2001 [4]           | en   | News         | -     | -   | 308  | R           | 8.1        | 847.2         |
 | 500N-KPCrowd [5]       | en   | News         | 450   | -   | 50   | R           | 46.2       | 465.3         |
 
+Where annotations were produced by authors (A), readers (R) or professional
+indexers (I).
 
-### References
+## Custom Datasets
+
+You can use any custom dataset that is in CSV format. The file should contain
+all texts in a column named `text`, and all labels in a column named `labels`.
+The file may be placed anywhere inside this directory.
+
+The labels for a text are supposed to be a list of keyphrases, which in the
+CSV file should appear as a single string where the keyphrases are
+separated by the pipe `|` character. For instance, one entry in the label
+column could look like:
+
+```
+dog|walk in the park|sun|ice-cream|hot weather
+```
+
+The custom dataset can then be loaded using the `Dataset` class by using:
+
+```python
+ds = Dataset('file/path.csv')
+```
+
+Where the file path is relative to this directory.
+
+## References
 
 1. **Keyphrase Extraction in Scientific Publications.**
    Thuy Dung Nguyen and Min-Yen Kan.
