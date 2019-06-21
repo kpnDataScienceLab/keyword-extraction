@@ -26,7 +26,7 @@ text, which also affects the evaluation (F1@k).
 * The `--dataset` flag takes either the name of a dataset (of which the
 supported ones currently are *500N-KPCrowd*, *DUC-2001*, *Inspec*,
 *NUS*, *WWW*, *KDD*). Alternatively, it takes the argument *all* which
-uses all of the listed datasets. Check the datasets [readme](datasets/README.md) for more
+uses all of the listed datasets. Check [datasets](datasets) for more
 information on the supported datasets and using custom ones.
 
 * The `--matchtype` flag takes the type of string comparison to be used
