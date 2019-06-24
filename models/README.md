@@ -40,7 +40,7 @@ from models import new_model
 3. Add the relevant arguments to `pipeline.py` by including an `argparse` argument
 along with the others in the form:
 ```python
-	#line 182
+#line 182
     parser.add_argument(
         "--new_model",
         help="Use the new model",
@@ -48,7 +48,7 @@ along with the others in the form:
     )
 ```
 ```python
-		#line 304
+#line 304
         if args.new_model is not None:
             methods.append({'name': 'Ensemble',
                             'train_function': new_model.train,
