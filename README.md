@@ -2,10 +2,16 @@
 
 ## Requirements
 
-Joseph show us how it's done ;) for instance:
+To setup the project, first create a virtual environment
+```
+$ virtualenv venv
+```
+
+Then we want to download all the dependencies
 
 ```
-$ python set_me_up_inside.sh
+$ source setup.sh
+$ source setup_datasets.sh
 ```
 
 ## Usage
