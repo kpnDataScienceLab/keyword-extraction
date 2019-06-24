@@ -59,7 +59,7 @@ def main():
     vocabulary = get_data_vocabulary()
     embeddings = get_embeddings(vocabulary)
 
-    with open('fasttext_embeddings.pkl', 'wb') as handle:
+    with open('../embeddings/fasttext_embeddings.pkl', 'wb') as handle:
         pickle.dump(embeddings, handle)
 
 

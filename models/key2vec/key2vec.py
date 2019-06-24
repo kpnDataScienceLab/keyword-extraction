@@ -29,7 +29,7 @@ def clean_text(text):
     return text.lower()
 
 
-def get_candidate_keywords(text):
+def get_candidate_keywords(text, lang):
     # get all words in the text
     candidates = text.split()
 
@@ -50,7 +50,7 @@ def get_topic_vector(topic_description):
     return np.mean([fasttext(w) for w in words], axis=0)
 
 
-# TODO: adapt code for our purpose
+# TODO: adapt code for our purpose. It is currently untested
 def get_cooccurrence_matrix(text, candidates):
     """
     Builds a co-occurrence matrix for all candidate words in the text. 1 is added to an entry
@@ -59,6 +59,8 @@ def get_cooccurrence_matrix(text, candidates):
     :param candidates: A list of keyphrases extracted from the text
     :return: A co-occurrence matrix for the words in candidates
     """
+
+    raise UserWarning("Edit this function! It's currently a copy-paste from stackoverflow")
 
     split_text = text.split()
 
@@ -78,7 +80,7 @@ def get_cooccurrence_matrix(text, candidates):
     return matrix
 
 
-def key2vec(text, topic_description, n=5):
+def test(text, topic_description, n=5, lang='dutch'):
     """
     :param text: Text that the keywords are extracted from
     :param topic_description: Text that should summarize the topic of the text
@@ -90,7 +92,7 @@ def key2vec(text, topic_description, n=5):
 
     # produce candidate keywords and clean the text
     text = clean_text(text)
-    candidates = get_candidate_keywords(text)
+    candidates = get_candidate_keywords(text, lang=lang)
 
     # ------ CANDIDATE SCORING ------
 
@@ -134,3 +136,7 @@ def key2vec(text, topic_description, n=5):
     keywords = []
 
     return keywords[0:n] if len(keywords) >= n else keywords
+
+
+def train(dataset, arguments, lang='dutch'):
+    pass
