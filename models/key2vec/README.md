@@ -2,8 +2,8 @@
 
 This model is currently incomplete. All steps that make up the model are
 reported both in the original
-[paper](additional_resources/papers/key2vec_2018.pdf) and in a condensed
-[list](models/key2vec/plan.txt).
+[paper](../../additional_resources/papers/key2vec_2018.pdf) and in a condensed
+[list](plan.txt).
 
 ## Requirements
 
@@ -18,7 +18,7 @@ information.
 
 Right now the current pipeline for obtaining them is as follows:
 
-1. In the [fasttext/embeddings](models/key2vec/fasttext/embeddings) folder,
+1. In the [fasttext/embeddings](fasttext/embeddings) folder,
 download and extract the text version of the fasttext embeddings
 from the fasttext [website](https://fasttext.cc/docs/en/crawl-vectors.html).
 You should end up with a file called `cc.nl.300.vec` which contains 2 million
@@ -28,7 +28,7 @@ You should end up with a file called `cc.nl.300.vec` which contains 2 million
 easier on the machine, I wrote a script that should take the set of all
 words that occur in the dataset used in the project, and extract only the
 fasttext embeddings used in the dataset. Those will be stored in the
-[embeddings](models/key2vec/embeddings) folder as a pickled dictionary.
+[embeddings](embeddings) folder as a pickled dictionary.
 
 To use the `make_fasttext_subset.py` script you will need to adapt it by
 changing the path and/or reading mode of the dataset in the function
