@@ -2,12 +2,13 @@
 
 ## Requirements
 
-To setup the project, first create a virtual environment
+To setup the project, first create a virtual environment:
+
 ```
 $ virtualenv venv
 ```
 
-Then we want to download all the dependencies
+Then download all the dependencies:
 
 ```
 $ source setup.sh
