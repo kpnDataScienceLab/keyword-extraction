@@ -7,8 +7,7 @@ To setup the project, first create a virtual environment
 $ virtualenv venv
 ```
 
-Then we want to download all the dependencies
-
+You'll want to download the dependencies, do this by:
 ```
 $ source setup.sh
 $ source setup_datasets.sh
