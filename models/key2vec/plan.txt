@@ -1,27 +1,33 @@
 Candidate selection
 
-	1. Use spacy for named entity recognition and apply all filters mentioned in the paper
-	2. Use regex for a few more filters and filter phrases longer than 3 words [15 mins]
+	1. Use spacy for named entity recognition [SKIPPED] and apply all filters mentioned in the paper
+
+	2. Use regex for a few more filters and filter phrases longer than 3 words
+
 	3. [x] Use fasttext to get representations for the key phrases by taking the mean embedding https://fasttext.cc/docs/en/crawl-vectors.html
 	   [ ] Use a phrase2vec model, e.g. https://github.com/Separius/awesome-sentence-embedding and https://github.com/epfml/sent2vec
 
 Candidate scoring
 
 	4. Compute the theme vector using whatever sentence representation used for 3.
+
 	5. Compute cosine similarity between all candidate words and theme vector.
+
 	6. Rescale scores from 0 to 1.
 
-############## DONE UNTIL HERE ##############
+################### DONE UNTIL HERE ###################
 
 Candidate ranking
 	
 	7. Construct an adjacency matrix. The nodes are the candidate keywords. Edges are created if they co-occur in a window size of 5.
-	    https://stackoverflow.com/questions/17458751/python-symmetric-word-matrix-using-nltk
+	   Currently basing the implementation of the adjacency matrix on:
+	   https://stackoverflow.com/questions/17458751/python-symmetric-word-matrix-using-nltk
+
 	8. Compute edge weights using:
 	
-					 1                 P(x, y)
-edge(x, y) = ------------------ * log ----------
-			  1 - cosine(x, y)         P(x)P(y)
+                             1                 P(x, y)
+        edge(x, y) = ------------------ * log ----------
+                      1 - cosine(x, y)         P(x)P(y)
 
-	
+
 	9. Use formula 4 from the paper to compute the final ranking score.

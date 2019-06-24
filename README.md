@@ -2,12 +2,13 @@
 
 ## Requirements
 
-To setup the project, first create a virtual environment
+To setup the project, first create a virtual environment:
+
 ```
 $ virtualenv venv
 ```
-
 You'll want to download the dependencies, do this by:
+
 ```
 $ source setup.sh
 $ source setup_datasets.sh

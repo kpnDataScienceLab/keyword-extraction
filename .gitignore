@@ -2,7 +2,7 @@
 evaluations/
 datasets/ake-datasets/
 models/key2vec/embeddings/
-additional_resources/fasttext/embeddings/
+models/key2vec/fasttext/embeddings/
 
 # PyCharm
 .idea/
