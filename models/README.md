@@ -8,22 +8,22 @@ As long as our new method has these two functions all should be good.
 
 ```
 def train(dataset, arguments, lang='dutch'):
-"""
-dataset: the dataset is a list of all documents.
-arguments: this is a list of all commandline arguments.
-lang: the language that is used
-"""
+	"""
+	dataset: the dataset is a list of all documents.
+	arguments: this is a list of all commandline arguments.
+	lang: the language that is used
+	"""
 ...
 
 ```
 ```
 def test(text, arguments, k=5, lang='dutch'):
-"""
-text: the text we want the keywords from.
-arguments: this is a list of all commandline arguments.
-k: the amount of keywords that should be returned.
-lang: the language that is used.
-"""
+	"""
+	text: the text we want the keywords from.
+	arguments: this is a list of all commandline arguments.
+	k: the amount of keywords that should be returned.
+	lang: the language that is used.
+	"""
 ...
 
 ```
