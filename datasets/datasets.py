@@ -102,7 +102,7 @@ class Dataset:
 
         for index, row in dataframe.iterrows():
             if type(row['text']) is str:
-                self.texts.append(row['fixed_text'])
+                self.texts.append(row['text'])
 
                 # the labels in the labels column should be separated by the | character
                 self.labels.append('|'.split(row['labels']))
