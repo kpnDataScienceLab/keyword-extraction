@@ -51,6 +51,28 @@ def save_results(name, dataset_name, f1_metrics, k, match_type):
     print("Saved results")
 
 
+def save_predictions(name, dataset_name, texts, predictions, labels):
+    """
+    Save predictions along with the texts.
+    """
+
+    global time_id
+
+    # create the destination folder if it doesn't exist
+    if not os.path.exists('evaluations'):
+        os.mkdir('evaluations')
+        print(f"Created evaluations folder")
+
+    with open(f'evaluations/predictions_{name}_{dataset_name.strip(".csv")}_{time_id}.csv', mode='w') as csv_file:
+        csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+        csv_writer.writerow(["text", "predictions", "labels"])
+        for t, p, l in zip(texts, predictions, labels):
+            csv_writer.writerow([t, '|'.join(p), '|'.join(l)])
+
+    print("Saved predictions")
+
+
 def run_pipeline(name, train_function, test_function, arguments, k=10, dataset_name='DUC-2001', match_type='strict'):
     print(f'\nEvaluating {name.upper()} on {dataset_name}\n')
 
@@ -79,13 +101,14 @@ def run_pipeline(name, train_function, test_function, arguments, k=10, dataset_n
         print(f"{key}:".rjust(15) + f"{results[key]:.3f}".rjust(7))
 
     save_results(name, dataset_name, results, k, match_type)
+    save_predictions(name, dataset_name, dataset.texts, predictions, dataset.labels)
 
 
 if __name__ == "__main__":
 
     # initialize the time id to identify the current run
     global time_id
-    time_id = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+    time_id = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     methods = []
 
