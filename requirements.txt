@@ -19,13 +19,12 @@ networkx==2.3
 nltk==3.4.3
 numpy==1.16.4
 pandas==0.24.2
-pkg-resources==0.0.0
 plac==0.9.6
 preshed==2.0.1
 pyrsistent==0.15.2
 python-dateutil==2.8.0
 pytz==2019.1
-rake-nltk==1.0.4
+rake_nltk==1.0.4
 requests==2.22.0
 s3transfer==0.2.1
 scikit-learn==0.21.2

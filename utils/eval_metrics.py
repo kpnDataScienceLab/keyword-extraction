@@ -79,8 +79,9 @@ def true_positive_check(keyword, labels, predictions, match_type):
     if match_type == 'strict':
         return keyword in labels and keyword not in predictions
 
-    if match_type == 'intersect':
-        return intersect(keyword, labels) and not intersect(keyword, predictions)
+    elif match_type == 'intersect':
+        return intersect(keyword, labels) and keyword not in predictions
+        # return intersect(keyword, labels) and not intersect(keyword, predictions)
 
     elif match_type == 'levenshtein':
         return levenshtein_check(keyword, labels) and not levenshtein_check(keyword, predictions)
@@ -129,8 +130,8 @@ def f1(labels, predictions, k=10, match_type='strict', debug=False):
     if debug:
         print("\b\b]\n\n")
 
-    tp_fp = min(len(labels), k) if k else len(labels)
-    tp_fn = len(predictions)
+    tp_fp = len(predictions)
+    tp_fn = min(len(labels), k) if k else len(labels)
 
     if tp == 0.:
         return 0.
@@ -138,7 +139,9 @@ def f1(labels, predictions, k=10, match_type='strict', debug=False):
     precision = tp / tp_fp
     recall = tp / tp_fn
 
-    return (2 * precision * recall) / (precision + recall)
+    f1 = (2 * precision * recall) / (precision + recall)
+
+    return f1
 
 
 def get_results(labels_list, predictions_list, k=10, match_type='strict', debug=False):
