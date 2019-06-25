@@ -167,7 +167,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dataset",
         type=str,
-        choices=['500N-KPCrowd', 'DUC-2001', 'Inspec', 'NUS', 'WWW', 'KDD', 'all'],
         help="Dataset to be used",
         default='DUC-2001'
     )
