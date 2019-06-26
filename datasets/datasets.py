@@ -105,7 +105,7 @@ class Dataset:
                 self.texts.append(row['text'])
 
                 # the labels in the labels column should be separated by the | character
-                self.labels.append('|'.split(row['labels']))
+                self.labels.append(row['labels'].split('|'))
 
     @staticmethod
     def clean_text(text):
