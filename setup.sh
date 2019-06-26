@@ -1,5 +1,5 @@
 pip install -r requirements.txt
-python -m spacy download en-vectors-web-lg
+python -m spacy download en_vectors_web_lg
 pip install git+https://github.com/boudinfl/pke.git
 python -m nltk.downloader stopwords
 python -m nltk.downloader universal_tagset
