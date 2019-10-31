@@ -16,7 +16,7 @@ joblib==0.13.2
 jsonschema==3.0.1
 murmurhash==1.0.2
 networkx==2.3
-nltk==3.4.3
+nltk==3.4.5
 numpy==1.16.4
 pandas==0.24.2
 plac==0.9.6
