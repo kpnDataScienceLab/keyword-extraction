@@ -38,5 +38,5 @@ srsly==0.0.6
 thinc==7.0.4
 tqdm==4.32.1
 Unidecode==1.0.23
-urllib3==1.25.3
+urllib3==1.26.5
 wasabi==0.2.2
